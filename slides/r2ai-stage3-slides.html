@@ -1,0 +1,446 @@
+<!doctype html>
+<html lang="vi">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>R2AI GURU Stage 3 - Slide trình bày</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=League+Gothic&family=Be+Vietnam+Pro:wght@400;600;800&family=JetBrains+Mono:wght@700&display=swap">
+<style>
+  :root {
+    --ink: #06161b; --panel: #0b232a; --paper: #f3f1ea; --paper-l: #fafaf8;
+    --teal: #1fb5c4; --teal-d: #0e7c86; --amber: #f2a93b; --amber-d: #d98e04;
+    --slate: #52606d; --graphite: #1f2933; --soft: #bfd8d5;
+  }
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  html, body { width: 100%; height: 100%; background: #000; overflow: hidden; font-family: "Be Vietnam Pro", "Segoe UI", Arial, sans-serif; }
+  #stage { position: absolute; left: 0; top: 0; width: 1920px; height: 1080px; transform-origin: 0 0; }
+  .slide { position: absolute; inset: 0; width: 1920px; height: 1080px; padding: 110px 128px 150px; display: none; flex-direction: column; background: var(--ink); color: var(--paper); overflow: hidden; }
+  .slide.active { display: flex; }
+  .slide.light { background: var(--paper-l); color: var(--graphite); }
+  .slide.warm { background: var(--amber); color: var(--ink); }
+  .kicker { font-family: "JetBrains Mono", "Be Vietnam Pro", Consolas, monospace; font-weight: 700; font-size: 26px; letter-spacing: 0.22em; text-transform: uppercase; color: var(--teal); }
+  .light .kicker { color: var(--teal-d); } .warm .kicker { color: var(--ink); }
+  h1, h2 { font-family: "League Gothic", Impact, "Arial Narrow", sans-serif; font-weight: 400; letter-spacing: -0.01em; line-height: 0.98; }
+  h2 { font-size: 132px; margin-top: 18px; }
+  h2 em, h1 em { font-style: normal; color: var(--amber); } .light h2 em { color: var(--teal-d); } .warm h2 em { color: var(--paper); }
+  p, li { font-size: 36px; line-height: 1.45; }
+  .mono { font-family: "JetBrains Mono", "Be Vietnam Pro", Consolas, monospace; font-weight: 700; text-transform: uppercase; letter-spacing: 0.1em; }
+  .sub { font-size: 38px; color: var(--soft); max-width: 1500px; margin-top: 26px; line-height: 1.4; }
+  .light .sub { color: var(--slate); } .warm .sub { color: var(--ink); }
+  .row { display: flex; gap: 36px; }
+  .grow { flex: 1; }
+  .card { background: var(--panel); border: 2px solid rgba(243, 241, 234, 0.22); padding: 36px 40px; display: flex; flex-direction: column; gap: 14px; }
+  .light .card { background: #fff; border-color: rgba(31, 41, 51, 0.18); }
+  .card h3 { font-family: "League Gothic", Impact, sans-serif; font-weight: 400; font-size: 76px; line-height: 1; color: var(--amber); }
+  .light .card h3 { color: var(--teal-d); }
+  .card p { font-size: 30px; color: var(--soft); line-height: 1.4; } .light .card p { color: var(--slate); }
+  .big { font-family: "League Gothic", Impact, sans-serif; line-height: 0.85; letter-spacing: -0.02em; }
+  .tag { display: inline-block; font-family: "JetBrains Mono", "Be Vietnam Pro", Consolas, monospace; font-weight: 700; font-size: 26px; letter-spacing: 0.08em; text-transform: uppercase; padding: 12px 24px; border: 3px solid rgba(243, 241, 234, 0.55); }
+  .tag.amber { border-color: var(--amber); color: var(--amber); }
+  table { border-collapse: collapse; width: 100%; font-size: 30px; }
+  th { text-align: left; font-family: "JetBrains Mono", "Be Vietnam Pro", Consolas, monospace; font-weight: 700; font-size: 24px; letter-spacing: 0.1em; text-transform: uppercase; color: var(--teal); padding: 16px 20px; border-bottom: 3px solid var(--teal); }
+  .light th { color: var(--teal-d); border-color: var(--teal-d); }
+  td { padding: 17px 20px; border-bottom: 1px solid rgba(243, 241, 234, 0.18); color: var(--paper); }
+  .light td { border-color: rgba(31, 41, 51, 0.15); color: var(--graphite); }
+  td.num, th.num { text-align: right; font-variant-numeric: tabular-nums; }
+  tr.hl td { color: var(--amber); font-weight: 800; } .light tr.hl td { color: var(--amber-d); }
+  .bar { height: 54px; transform-origin: 0 50%; }
+  .foot { position: absolute; left: 128px; right: 128px; bottom: 56px; display: flex; justify-content: space-between; font-family: "JetBrains Mono", "Be Vietnam Pro", Consolas, monospace; font-weight: 700; font-size: 22px; letter-spacing: 0.12em; text-transform: uppercase; color: rgba(243, 241, 234, 0.55); }
+  .light .foot { color: rgba(31, 41, 51, 0.55); } .warm .foot { color: rgba(6, 22, 27, 0.65); }
+  aside.notes { display: none; }
+  #notes { display: none; position: fixed; left: 0; right: 0; bottom: 0; max-height: 46vh; overflow: auto; background: #06161b; color: #f3f1ea; font-size: 19px; line-height: 1.45; padding: 14px 40px 18px; z-index: 50; border-top: 3px solid #f2a93b; }
+  #notes h4, .pv h4 { font: 700 13px/1 "JetBrains Mono", Consolas, monospace; letter-spacing: 0.14em; text-transform: uppercase; color: #f2a93b; margin: 12px 0 5px; }
+  #notes ul, .pv ul { padding-left: 22px; } #notes li, .pv li { font-size: inherit; line-height: inherit; margin-bottom: 3px; } #notes p, .pv p { font-size: inherit; line-height: inherit; }
+  #notes .t, .pv .t { float: right; font: 700 15px/1 "JetBrains Mono", Consolas, monospace; color: #1fb5c4; }
+  #notes.on { display: block; }
+  #hint { position: fixed; right: 18px; top: 14px; font: 700 14px/1 "JetBrains Mono", "Be Vietnam Pro", Consolas, monospace; color: rgba(255, 255, 255, 0.45); letter-spacing: 0.12em; z-index: 60; }
+  @media print {
+    @page { size: 1920px 1080px; margin: 0; }
+    html, body { width: 1920px; height: auto; overflow: visible; background: none; }
+    #stage { position: static; transform: none !important; width: 1920px; height: auto; }
+    .slide { display: flex !important; position: relative; page-break-after: always; break-after: page; }
+    #notes, #hint { display: none !important; }
+  }
+</style>
+</head>
+<body>
+<div id="stage">
+
+<!-- 1. Tiêu đề -->
+<section class="slide" id="s1">
+  <div style="position:absolute; right:-120px; top:-120px; width:1000px; height:1000px; border-radius:50%; background: radial-gradient(circle, rgba(14,124,134,0.45), rgba(14,124,134,0) 66%)"></div>
+  <div class="kicker" style="margin-top: 40px">R2AI GURU · Stage 3 · Demo Day</div>
+  <h1 style="font-size: 200px; margin-top: 30px; white-space: nowrap">TRUY HỒI TÀI LIỆU Y KHOA<br><em>ĐA NGÔN NGỮ VIỆT – TRUNG</em></h1>
+  <p class="sub" style="margin-top: 36px">Một hệ thống truy hồi chạy trọn trên một máy cá nhân: RTX 3050 6 GB, 16 GB RAM, không cloud GPU.</p>
+  <div class="row" style="margin-top: auto; gap: 28px">
+    <span class="tag amber">Public FINAL 0,2483</span><span class="tag">4,39M URL</span><span class="tag">7,6M chunk</span><span class="tag">1 GPU · 6 GB</span>
+  </div>
+  <div class="foot"><span>Lê Ngọc Tú</span><span>19/10/2026</span></div>
+  <aside class="notes"><div class="t">0:30</div><h4>Nói</h4><ul><li>Đây là hệ thống truy hồi tài liệu y khoa bằng tiếng Việt và tiếng Trung.</li><li>Điểm khác biệt: toàn bộ chạy trên một máy cá nhân, không thuê cloud GPU.</li><li>Điểm Public hiện tại là 0,2483, gấp 9,8 lần bài nộp đầu tiên (0,0253).</li></ul><h4>Số cần nhớ</h4><p>4,39 triệu URL · 7,6 triệu chunk · RTX 3050 6 GB · FINAL 0,2483.</p><h4>Chuyển slide</h4><p>Trước hết, bài toán cụ thể là gì.</p><h4>Nếu bị hỏi</h4><p>Có dùng cloud không? Không. Mọi bước đều chạy trên máy này.</p></aside>
+</section>
+
+<!-- 2. Bài toán -->
+<section class="slide" id="s2">
+  <div class="kicker">01 · Bài toán</div>
+  <h2>TÌM ĐÚNG TÀI LIỆU <em>VÀ ĐÚNG ĐOẠN VĂN</em></h2>
+  <div class="row" style="margin-top: 56px">
+    <div class="card grow"><h3>4,39 triệu URL</h3><p>97 domain y tế, tiếng Việt và tiếng Trung. Đội thi tự crawl, làm sạch, chia chunk và lập chỉ mục.</p></div>
+    <div class="card grow"><h3>1.200 câu hỏi</h3><p>Câu hỏi y khoa tiếng Việt. Bảng Public chấm 600 câu; Private dùng bộ câu khác.</p></div>
+    <div class="card grow"><h3>2 tầng F2</h3><p>FINAL = trung bình (Docs F2, Chunks F2). Recall nặng gấp 4 lần Precision. Chunk đúng khi LCS ≥ 0,40.</p></div>
+  </div>
+  <div class="row" style="margin-top: 36px; gap: 20px; flex-wrap: wrap">
+    <span class="tag">Model open-weight ≤ 15B</span><span class="tag">Phát hành trước 01/08/2026</span><span class="tag">zip ≤ 100 MB</span><span class="tag">Chunk ≤ 1.024 token</span>
+  </div>
+  <div class="foot"><span>R2AI GURU · Stage 3</span><span>2 / 15</span></div>
+  <aside class="notes"><div class="t">1:00</div><h4>Nói</h4><ul><li>Cho một câu hỏi tiếng Việt, phải trả về hai thứ: tài liệu đúng và đoạn văn đúng trong tài liệu đó.</li><li>Hai tầng chấm độc lập, mỗi tầng một điểm F2; điểm cuối là trung bình của hai điểm.</li><li>F2 nặng recall gấp 4 lần precision. Một đoạn chỉ tính đúng khi cùng tài liệu và khớp từ (LCS) từ 0,40 trở lên so với đoạn tham chiếu.</li><li>Hàng cuối là các ràng buộc cứng: model mở dưới 15B, zip dưới 100 MB, đoạn dưới 1.024 token.</li></ul><h4>Số cần nhớ</h4><p>1.200 câu hỏi; Public chấm 600 câu. 97 domain. F2 = 5PR / (4P + R).</p><h4>Chuyển slide</h4><p>Ràng buộc đầu tiên quyết định kiến trúc là phần cứng.</p><h4>Nếu bị hỏi</h4><p>Private khác Public thế nào? Bộ câu khác, tối đa 5 lượt nộp. Kế hoạch là nộp lại đúng bản đã chốt cho Public.</p></aside>
+</section>
+
+<!-- 3. Phần cứng -->
+<section class="slide" id="s3">
+  <div class="kicker">02 · Ràng buộc phần cứng</div>
+  <h2>MỘT MÁY CÁ NHÂN, <em>KHÔNG CLOUD</em></h2>
+  <div class="row" style="margin-top: 48px; align-items: flex-start; gap: 80px">
+    <div style="width: 640px; display: flex; flex-direction: column; gap: 22px">
+      <p class="mono" style="font-size: 34px; color: var(--amber)">RTX 3050 · 6 GB VRAM</p>
+      <p class="mono" style="font-size: 34px">16 GB RAM dùng chung</p>
+      <p class="mono" style="font-size: 34px">Ổ HDD, 12 nhân CPU</p>
+      <p style="margin-top: 14px; color: var(--soft); font-size: 32px">Máy này cũng là máy làm việc hằng ngày, nên mọi bước nặng đều có guard: tự tạm dừng khi RAM trống thấp, GPU nóng hoặc VRAM trống thấp.</p>
+    </div>
+    <div style="flex: 1; display: flex; flex-direction: column; gap: 26px">
+      <p class="mono" style="font-size: 24px; color: var(--teal)">Dung lượng các thành phần</p>
+      <div><div class="row" style="justify-content: space-between"><span style="font-size: 30px">Vector fp16 (mmap trên đĩa)</span><b style="font-size: 30px">15 GB</b></div><div class="bar" style="width: 100%; background: var(--teal-d)"></div></div>
+      <div><div class="row" style="justify-content: space-between"><span style="font-size: 30px">Chỉ mục BM25 (Tantivy)</span><b style="font-size: 30px">2,7 GB</b></div><div class="bar" style="width: 18%; background: var(--teal)"></div></div>
+      <div><div class="row" style="justify-content: space-between"><span style="font-size: 30px">Chỉ mục nhị phân 1024 bit</span><b style="font-size: 30px">1,0 GB</b></div><div class="bar" style="width: 6.7%; background: var(--amber)"></div></div>
+      <p style="font-size: 30px; color: var(--soft)">Truy hồi chiếm khoảng 4 GB RAM, VRAM đỉnh của BGE-M3 khoảng 1,3 GB.</p>
+    </div>
+  </div>
+  <div class="foot"><span>R2AI GURU · Stage 3</span><span>3 / 15</span></div>
+  <aside class="notes"><div class="t">0:45</div><h4>Nói</h4><ul><li>Máy này đồng thời là máy làm việc hằng ngày, nên mọi bước nặng đều có guard tự dừng khi RAM thấp, GPU nóng hoặc VRAM thấp.</li><li>Vector đầy đủ chiếm 15 GB nên không nạp vào RAM, chỉ đọc mmap từ đĩa.</li><li>Tìm ứng viên bằng chỉ mục nhị phân 1 GB, rồi chấm lại top 200 bằng vector đầy đủ.</li></ul><h4>Số cần nhớ</h4><p>15 GB vector, 2,7 GB BM25, 1,0 GB nhị phân. Truy hồi khoảng 4 GB RAM, VRAM đỉnh BGE-M3 khoảng 1,3 GB.</p><h4>Chuyển slide</h4><p>Với ràng buộc đó, câu hỏi tiếp theo: dữ liệu đã dùng được bao nhiêu.</p><h4>Nếu bị hỏi</h4><p>Embed mất bao lâu? Thông lượng 28 đến 50 chunk mỗi giây; tổng thời gian cộng dồn qua nhiều đêm chưa đo chính xác, nên không nêu con số.</p></aside>
+</section>
+
+<!-- 4. Dữ liệu -->
+<section class="slide" id="s4">
+  <div class="kicker">03 · Dữ liệu: dùng bao nhiêu, bỏ bao nhiêu</div>
+  <h2>7,6 TRIỆU CHUNK <em>TỪ 4,39 TRIỆU URL</em></h2>
+  <div class="row" style="margin-top: 44px; gap: 64px; align-items: flex-start">
+    <div style="width: 880px; display: flex; flex-direction: column; gap: 20px">
+      <div><div class="row" style="justify-content: space-between"><span style="font-size: 28px">URL trong corpus</span><b style="font-size: 28px">4.394.718 · 100%</b></div><div class="bar" style="width: 100%; background: var(--teal-d); height: 44px"></div></div>
+      <div><div class="row" style="justify-content: space-between"><span style="font-size: 28px">Crawl thành công</span><b style="font-size: 28px">3.487.922 · 79,37%</b></div><div class="bar" style="width: 79.4%; background: var(--teal); height: 44px"></div></div>
+      <div><div class="row" style="justify-content: space-between"><span style="font-size: 28px">Trang được chunk</span><b style="font-size: 28px">3.033.854 · 69,03%</b></div><div class="bar" style="width: 69%; background: var(--amber); height: 44px"></div></div>
+      <p style="font-size: 30px; color: var(--soft); margin-top: 8px">→ <b style="color: var(--amber)">7.607.882 chunk</b>: 76,5% tiếng Trung, 23,5% tiếng Việt.</p><p style="font-size: 26px; color: var(--soft)">79,37% → 69,03%: loại 454.068 trang lỗi mã hóa (13,02% số đã crawl), chủ yếu domain tiếng Trung cnkang.</p>
+    </div>
+    <div class="grow">
+      <table>
+        <tr><th>Phần bị loại</th><th class="num">Số trang</th></tr>
+        <tr><td>Bị WAF chặn (banned)</td><td class="num">875.487</td></tr>
+        <tr><td>Lỗi mã hóa (cnkang)</td><td class="num">454.068</td></tr>
+        <tr><td>Cần render JavaScript</td><td class="num">28.710</td></tr>
+        <tr><td>Lỗi vĩnh viễn</td><td class="num">2.599</td></tr>
+        <tr class="hl"><td>Chưa vào chỉ mục</td><td class="num">1.360.864 · 30,97%</td></tr>
+      </table>
+    </div>
+  </div>
+  <div class="foot"><span>Số đo trực tiếp từ crawl_cache và các shard chunk</span><span>4 / 15</span></div>
+  <aside class="notes"><div class="t">1:00</div><h4>Nói</h4><ul><li>Nói thẳng con số: vào chỉ mục 69,03% corpus, không phải 100%.</li><li>Crawl xong 79,37%. Từ đó trừ 454 nghìn trang lỗi mã hóa (13,02% số đã crawl): trang GBK bị giải mã sai, gần như toàn bộ là cnkang, một domain tiếng Trung.</li><li>875 nghìn trang bị chặn IP, 28,7 nghìn cần render JavaScript, 2,6 nghìn lỗi vĩnh viễn.</li><li>Chưa biết bao nhiêu tài liệu đáp án nằm trong phần thiếu. Bằng chứng gián tiếp: phần thiếu chủ yếu là tiếng Trung, trong khi 94,2% cửa sổ trúng thuộc tài liệu tiếng Việt.</li></ul><h4>Số cần nhớ</h4><p>4.394.718 → 3.487.922 → 3.033.854 trang; 7.607.882 chunk; 30,97% chưa vào chỉ mục (1.360.864 trang).</p><h4>Chuyển slide</h4><p>Có dữ liệu rồi, đây là đường đi của một câu hỏi.</p><h4>Nếu bị hỏi</h4><p>Sao không tải lại cnkang? Gần 450 nghìn trang tiếng Trung, lợi ích kỳ vọng thấp theo bằng chứng domain, mà phải crawl, embed và rerank lại. Quyết định là không làm.</p></aside>
+</section>
+
+<!-- 5. Kiến trúc -->
+<section class="slide" id="s5">
+  <div class="kicker">04 · Kiến trúc</div>
+  <h2>TỪ URL THÔ <em>ĐẾN CÂU TRẢ LỜI XẾP HẠNG</em></h2>
+  <div class="row" style="margin-top: 60px; align-items: stretch; gap: 22px">
+    <div class="card" style="flex: 1"><h3>CRAWL</h3><p>httpx bất đồng bộ, circuit breaker từng domain, checkpoint SQLite</p></div>
+    <div class="card" style="flex: 1"><h3>CHUNK</h3><p>≤ 420 token BGE-M3, overlap 60, văn bản nguyên văn</p></div>
+    <div style="flex: 1.15; display: flex; flex-direction: column; gap: 22px">
+      <div class="card grow" style="padding: 22px 30px"><h3 style="font-size: 60px">BM25</h3><p style="font-size: 26px">Tantivy, bigram chữ Hán</p></div>
+      <div class="card grow" style="padding: 22px 30px"><h3 style="font-size: 60px">DENSE</h3><p style="font-size: 26px">BGE-M3, nhị phân 1024 bit</p></div>
+    </div>
+    <div class="card" style="flex: 1"><h3>RRF</h3><p>k = 60, giữ 600 chunk</p></div>
+    <div class="card" style="flex: 1.15; border-color: var(--amber)"><h3>RERANK</h3><p>BGE-reranker-v2-m3 có tiêu đề + mục, ghép Qwen3-Reranker-0.6B</p></div>
+  </div>
+  <div class="row" style="margin-top: 36px; gap: 22px">
+    <div class="card grow" style="border-color: var(--teal)"><p style="font-size: 32px; color: var(--paper)"><b style="color: var(--amber)">Chọn doc:</b> điểm rerank ≥ ngưỡng, tối đa 400 doc mỗi câu</p></div>
+    <div class="card grow" style="border-color: var(--teal)"><p style="font-size: 32px; color: var(--paper)"><b style="color: var(--amber)">Chọn đoạn:</b> cửa sổ ≤ 900 token ghép từ chunk liền kề</p></div>
+  </div>
+  <div class="foot"><span>Truy hồi nóng: trung vị 256 ms mỗi câu (BM25 58 + dense 178)</span><span>5 / 15</span></div>
+  <aside class="notes"><div class="t">1:15</div><h4>Nói</h4><ul><li>Đi từ trái sang phải: crawl, chunk, hai nhánh tìm kiếm song song, hợp nhất, chấm lại.</li><li>BM25 giỏi khớp từ khóa, dense BGE-M3 hiểu nghĩa và xuyên ngôn ngữ; RRF trộn hai danh sách, giữ 600 chunk.</li><li>Reranker (cross-encoder) chấm lại 600 chunk đó, có đưa tiêu đề và mục vào. Với 100 doc đầu mỗi câu, ghép thêm điểm của Qwen3-Reranker-0.6B (z-score trong từng câu, trọng số 0,5).</li><li>Hai quyết định ở hàng dưới tạo ra phần lớn điểm: chọn doc theo ngưỡng điểm rerank, và nộp cửa sổ dài thay vì chunk ngắn.</li></ul><h4>Số cần nhớ</h4><p>Chunk tối đa 420 token, overlap 60. RRF k = 60. Tối đa 400 doc mỗi câu. Truy hồi nóng 256 ms mỗi câu.</p><h4>Chuyển slide</h4><p>Điều thay đổi cách làm của cả dự án là một phép đo ở bài nộp đầu tiên.</p><h4>Nếu bị hỏi</h4><p>Vì sao cần BM25 khi đã có dense? Đo thật: BM25 thuần chỉ đạt khoảng 54% điểm của RRF, nên cả hai đều cần.</p></aside>
+</section>
+
+<!-- 6. 3 -> 71 -->
+<section class="slide warm" id="s6">
+  <div class="kicker">05 · Phát hiện quan trọng nhất</div>
+  <div class="row" style="align-items: flex-end; margin-top: 10px; gap: 70px">
+    <div style="position: relative"><div class="big" style="font-size: 470px; opacity: 0.4">3</div><div style="position: absolute; left: -10px; right: -10px; top: 232px; height: 26px; background: var(--ink)"></div></div>
+    <div class="big" style="font-size: 680px">71</div>
+  </div>
+  <p style="font-size: 38px; font-weight: 800; margin-top: 18px">doc tham chiếu mỗi câu: giả định ban đầu 3, đo được 71,0 (trung vị 60, P10 = 12, P90 = 145, tối đa 190)</p>
+  <p style="font-size: 30px; margin-top: 10px">Bài nộp đầu tiên chỉ trả 3 doc nên chỉ đạt 0,0253. Lời giải: trả hàng trăm doc rồi cắt theo chất lượng.</p>
+  <div class="foot"><span>Đo từ file chi tiết của bộ chấm, 593 câu có nhãn</span><span>6 / 15</span></div>
+  <aside class="notes"><div class="t">1:00</div><h4>Nói</h4><ul><li>Đây là bài học lớn nhất của dự án.</li><li>Ta kế thừa từ giai đoạn trước giả định: trả ít doc, miễn chính xác. Bài nộp đầu trả 3 doc và chỉ được 0,0253.</li><li>Khi đọc file chi tiết của bộ chấm mới thấy mỗi câu có trung bình 71 doc đúng. Trả 3 doc thì recall tối đa khoảng 4%.</li><li>Từ đó đổi hướng: trả hàng trăm doc, rồi cắt theo chất lượng.</li></ul><h4>Số cần nhớ</h4><p>71,0 doc mỗi câu, trung vị 60, P10 = 12, P90 = 145, tối đa 190. Khoảng 75 chunk đúng mỗi câu.</p><h4>Chuyển slide</h4><p>Chính phát hiện này cũng làm lộ ra vấn đề của bộ dev mà ta tự dựng.</p><h4>Nếu bị hỏi</h4><p>Sao không biết sớm hơn? Số này chỉ có trong file chi tiết của bộ chấm, sau lần nộp đầu tiên được chấm.</p></aside>
+</section>
+
+<!-- 7. Dev set đánh lừa -->
+<section class="slide" id="s7">
+  <div class="kicker">06 · Bài học về cách đo</div>
+  <h2>BỘ DEV TỰ DỰNG <em>ĐÁNH LỪA</em></h2>
+  <div class="row" style="margin-top: 50px; gap: 40px">
+    <div class="card grow">
+      <p class="mono" style="font-size: 24px; color: var(--teal)">Bộ dev ViHealthQA · 743 cặp</p>
+      <h3 style="font-size: 130px">~1,4 doc / câu</h3>
+      <p style="font-size: 36px">Reranker bị coi là kém RRF: ChunkHit@1 0,225 so với 0,272.</p>
+    </div>
+    <div class="card grow" style="border-color: var(--amber)">
+      <p class="mono" style="font-size: 24px; color: var(--amber)">Leaderboard thật · 600 câu</p>
+      <h3 style="font-size: 130px">~71 doc / câu</h3>
+      <p style="font-size: 36px">Reranker làm Chunks F2 tăng từ 0,1495 lên 0,1748 (+17% recall, +18% precision).</p>
+    </div>
+  </div>
+  <p style="margin-top: 52px; font-size: 44px; font-weight: 600">Nhãn thưa và lệch thì cho kết luận ngược chiều. Chọn K và reranker bằng leaderboard, không bằng dev tự dựng.</p>
+  <div class="foot"><span>R2AI GURU · Stage 3</span><span>7 / 15</span></div>
+  <aside class="notes"><div class="t">0:45</div><h4>Nói</h4><ul><li>Ta dựng bộ dev 743 cặp từ ViHealthQA, chỉ khoảng 1,4 doc nhãn mỗi câu.</li><li>Trên bộ đó reranker trông kém RRF. Trên leaderboard thật thì ngược lại: reranker nâng Chunks F2 từ 0,1495 lên 0,1748.</li><li>Kết luận về cách làm: khi nhãn thưa và lệch, đừng tin dev tự dựng để chọn K hay chọn model; dùng điểm leaderboard.</li></ul><h4>Số cần nhớ</h4><p>1,4 so với 71 doc mỗi câu. ChunkHit@1: reranker 0,225, RRF 0,272 trên dev. Leaderboard: +17% recall, +18% precision chunk.</p><h4>Chuyển slide</h4><p>Hiểu đúng cách đo rồi, ta tối ưu phần đoạn văn trước.</p><h4>Nếu bị hỏi</h4><p>Dev set còn dùng được không? Chỉ dùng để kiểm tra pipeline chạy đúng, không dùng để chọn tham số.</p></aside>
+</section>
+
+<!-- 8. Chunk dài -->
+<section class="slide" id="s8">
+  <div class="kicker">07 · Chunk dài thắng chunk ngắn</div>
+  <h2>CỬA SỔ ≤ 900 TOKEN <em>TĂNG PRECISION 3,3 LẦN</em></h2>
+  <div class="row" style="margin-top: 54px; gap: 80px; align-items: flex-start">
+    <div style="width: 760px; display: flex; flex-direction: column; gap: 28px">
+      <div><div class="row" style="justify-content: space-between"><span style="font-size: 30px">Chunk ~350 token (K = 100)</span><b style="font-size: 36px; color: var(--soft)">0,064</b></div><div class="bar" style="width: 30.8%; background: var(--teal-d)"></div></div>
+      <div><div class="row" style="justify-content: space-between"><span style="font-size: 30px">Cửa sổ ≤ 900 token (30 cửa sổ)</span><b style="font-size: 36px; color: var(--amber)">0,208</b></div><div class="bar" style="width: 100%; background: var(--amber)"></div></div>
+      <p class="mono" style="font-size: 24px; color: var(--teal)">Chunks Precision, cùng cách xếp hạng</p>
+    </div>
+    <div class="grow">
+      <p style="font-size: 36px">Overlap = LCS / độ dài chunk <b style="color: var(--amber)">tham chiếu</b>. Đoạn nộp càng dài thì càng chứa trọn chunk tham chiếu mà không đổi mẫu số.</p>
+      <p style="font-size: 32px; color: var(--soft); margin-top: 22px">Overlap của cửa sổ trúng: trung bình 0,77; 40,7% đạt ≥ 0,9. Cửa sổ 980 token không giúp thêm (precision +5%, số cửa sổ −8%).</p>
+    </div>
+  </div>
+  <div class="foot"><span>Bài nộp 5591 so với K100 × 1 chunk</span><span>8 / 15</span></div>
+  <aside class="notes"><div class="t">1:00</div><h4>Nói</h4><ul><li>Mẫu số của điểm khớp là độ dài đoạn tham chiếu, không phải đoạn ta nộp.</li><li>Nên nộp đoạn dài chỉ có lợi: chứa trọn đoạn tham chiếu mà không đổi mẫu số.</li><li>Ghép chunk liền kề cùng tài liệu tới 900 token; precision của chunk tăng 3,3 lần, từ 0,064 lên 0,208.</li><li>Thử 980 token không hơn: mỗi cửa sổ chính xác hơn 5% nhưng zip bị trần 100 MB nên số cửa sổ giảm 8%.</li></ul><h4>Số cần nhớ</h4><p>0,064 → 0,208. Overlap cửa sổ trúng trung bình 0,77; 40,7% đạt từ 0,9.</p><h4>Chuyển slide</h4><p>Còn câu hỏi ở tầng tài liệu: lấy bao nhiêu doc cho mỗi câu.</p><h4>Nếu bị hỏi</h4><p>Sao 900 mà không 1.024? Bộ chấm đếm token lệch tới khoảng 30 so với tokenizer ta dùng, nên phải chừa biên.</p></aside>
+</section>
+
+<!-- 9. Điểm rerank dự báo -->
+<section class="slide" id="s9">
+  <div class="kicker">08 · Điểm rerank dự báo độ đúng</div>
+  <h2>CHỌN DOC THEO <em>NGƯỠNG ĐIỂM</em>, KHÔNG THEO K</h2>
+  <div class="row" style="margin-top: 40px; gap: 70px; align-items: flex-end">
+    <div style="width: 1060px; height: 520px; display: flex; align-items: flex-end; gap: 26px; border-bottom: 3px solid var(--paper)">
+      <div style="flex:1; text-align:center"><b style="font-size: 30px">1,3%</b><div style="height: 14px; background: var(--teal-d)"></div></div>
+      <div style="flex:1; text-align:center"><b style="font-size: 30px">4,6%</b><div style="height: 50px; background: var(--teal-d)"></div></div>
+      <div style="flex:1; text-align:center"><b style="font-size: 30px">9,8%</b><div style="height: 106px; background: var(--teal-d)"></div></div>
+      <div style="flex:1; text-align:center"><b style="font-size: 30px">19,4%</b><div style="height: 210px; background: var(--teal)"></div></div>
+      <div style="flex:1; text-align:center"><b style="font-size: 30px">28,3%</b><div style="height: 306px; background: var(--teal)"></div></div>
+      <div style="flex:1; text-align:center"><b style="font-size: 30px; color: var(--amber)">37,1%</b><div style="height: 400px; background: var(--amber)"></div></div>
+    </div>
+    <div class="grow" style="padding-bottom: 6px">
+      <p style="font-size: 34px">Tỷ lệ cửa sổ trúng theo điểm rerank. Trong cùng nhóm hạng, điểm cao trúng gấp 2 đến 3 lần điểm thấp.</p>
+      <p style="font-size: 34px; margin-top: 20px; color: var(--amber); font-weight: 800">Docs F2: 0,2513 → 0,2698</p>
+    </div>
+  </div>
+  <div class="row" style="width: 1060px; margin-top: 12px; gap: 26px">
+    <span class="mono" style="flex:1; text-align:center; font-size: 22px">&lt; −4</span><span class="mono" style="flex:1; text-align:center; font-size: 22px">−4…−2</span><span class="mono" style="flex:1; text-align:center; font-size: 22px">−2…0</span><span class="mono" style="flex:1; text-align:center; font-size: 22px">0…2</span><span class="mono" style="flex:1; text-align:center; font-size: 22px">2…4</span><span class="mono" style="flex:1; text-align:center; font-size: 22px">≥ 4</span>
+  </div>
+  <div class="foot"><span>57.000 cửa sổ, 9.282 trúng (16,3%) · bài 5684</span><span>9 / 15</span></div>
+  <aside class="notes"><div class="t">1:00</div><h4>Nói</h4><ul><li>Điểm rerank dự báo độ đúng rõ hơn thứ hạng: cột cao nhất trúng 37,1%, cột thấp nhất 1,3%.</li><li>Vì vậy thay K cố định bằng ngưỡng điểm: câu nào có nhiều ứng viên tốt thì nộp nhiều doc hơn, câu nào ít thì nộp ít.</li><li>Docs F2 tăng từ 0,2513 (K cố định) lên 0,2698.</li></ul><h4>Số cần nhớ</h4><p>Ngưỡng điểm -1,5, tối đa 400 doc; trung bình 167,3 doc mỗi câu. 57.000 cửa sổ phân tích, 16,3% trúng.</p><h4>Chuyển slide</h4><p>Gom lại, đây là đường điểm qua toàn bộ các bước.</p><h4>Nếu bị hỏi</h4><p>Sao không chỉnh số doc riêng cho từng câu? Đã đo: lý tưởng +0,021 nhưng quy tắc thực tế kiểm tra chéo chỉ +0,006, trong sai số.</p></aside>
+</section>
+
+<!-- 10. Hành trình điểm -->
+<section class="slide" id="s10">
+  <div class="kicker">09 · Hành trình điểm Public</div>
+  <h2>TỪ 0,0253 <em>LÊN 0,2483</em></h2>
+  <svg id="chart" width="1664" height="660" viewBox="0 0 1664 660" style="margin-top: 20px" aria-label="Đường điểm FINAL theo các bước"></svg>
+  <div class="foot"><span>27 bài nộp đã chấm · results/leaderboard_history.csv</span><span>10 / 15</span></div>
+  <aside class="notes"><div class="t">0:45</div><h4>Nói</h4><ul><li>Mỗi bước tăng đều có nguyên nhân đo được: trả nhiều doc, cửa sổ dài, thêm cửa sổ, rerank, rerank sâu, ngưỡng điểm, pool 600, ghép thêm Qwen3-Reranker-0.6B, lọc theo corpus mới, crawl lại thêm trang tiếng Việt.</li><li>Từ bước ngưỡng điểm trở đi, mọi tinh chỉnh chỉ còn vài phần nghìn (ghép Qwen cho +0,003; lọc theo corpus mới cho +0,0085, crawl lại trang tiếng Việt cho +0,0056): hệ thống đã phẳng với cách làm hiện tại.</li></ul><h4>Số cần nhớ</h4><p>0,0253 → 0,1467 → 0,1700 → 0,1880 → 0,2006 → 0,2227 → 0,2306 → 0,2312 → 0,2342 → 0,2427 → 0,2483. 27 bài đã chấm.</p><h4>Chuyển slide</h4><p>Đây là bản chốt.</p><h4>Nếu bị hỏi</h4><p>Có chạy lại nhiều lần lấy điểm cao nhất không? Không chỉnh theo từng câu; ngưỡng đều theo điểm rerank để tổng quát cho bộ câu Private.</p></aside>
+</section>
+
+<!-- 11. Kết quả cuối -->
+<section class="slide" id="s11">
+  <div class="kicker">10 · Bản Public chốt (bài 6106)</div>
+  <h2>FINAL <em>0,2483</em></h2>
+  <div class="row" style="margin-top: 36px; gap: 56px; align-items: flex-start">
+    <div style="width: 940px">
+      <table>
+        <tr><th>Cấp</th><th class="num">F2</th><th class="num">Precision</th><th class="num">Recall</th></tr>
+        <tr class="hl"><td>Docs</td><td class="num">0,2906</td><td class="num">0,1791</td><td class="num">0,4016</td></tr>
+        <tr class="hl"><td>Chunks</td><td class="num">0,2060</td><td class="num">0,2028</td><td class="num">0,2384</td></tr>
+      </table>
+      <p style="font-size: 30px; color: var(--soft); margin-top: 28px">166,1 doc và khoảng 92 cửa sổ mỗi câu; zip 99,7 MB. So với bài 6039 (0,2427): crawl lại 117 nghìn trang tiếng Việt nâng +0,0056, chủ yếu ở recall tài liệu.</p>
+    </div>
+    <div class="grow">
+      <p class="mono" style="font-size: 24px; color: var(--teal)">Điểm mạnh và điểm nghẽn</p>
+      <p style="font-size: 32px; margin-top: 10px">Recall doc 0,40 cao hơn hẳn Precision 0,18: tìm được nhiều doc đúng nhưng còn lẫn nhiều doc sai.</p>
+      <p style="font-size: 32px; margin-top: 14px; color: var(--amber); font-weight: 800">Điểm nghẽn là Precision, tức khả năng phân biệt doc đúng và doc sai.</p>
+    </div>
+  </div>
+  <div class="row" style="margin-top: 44px; gap: 40px">
+    <div class="card grow"><h3 style="font-size: 130px">0,2906</h3><p class="mono" style="font-size: 24px">Docs F2</p></div>
+    <div class="card grow"><h3 style="font-size: 130px">0,2060</h3><p class="mono" style="font-size: 24px">Chunks F2</p></div>
+    <div class="card grow"><h3 style="font-size: 130px">9,8×</h3><p class="mono" style="font-size: 24px">so với bài nộp đầu tiên</p></div>
+  </div>
+  <div class="foot"><span>600 câu Public · điểm Private chưa biết</span><span>11 / 15</span></div>
+  <aside class="notes"><div class="t">0:45</div><h4>Nói</h4><ul><li>Bản chốt cho Public là bài 6106: FINAL 0,2483, Docs F2 0,2906, Chunks F2 0,2060. So với bài 6039 (0,2427), bản này thêm 117 nghìn trang tiếng Việt crawl lại vào chỉ mục, giữ nguyên mọi tham số khác; recall tài liệu tăng 0,02, precision gần như giữ.</li><li>Nhìn bảng: recall doc 0,40 cao hơn hẳn precision 0,18. Tìm được nhiều doc đúng nhưng còn lẫn nhiều doc sai.</li><li>Nên điểm nghẽn là precision, tức khả năng phân biệt doc đúng và sai, không phải độ phủ.</li></ul><h4>Số cần nhớ</h4><p>Docs P 0,1791, R 0,4016. Chunks P 0,2028, R 0,2384. 166,1 doc và khoảng 92 cửa sổ mỗi câu; zip 99,7 MB.</p><h4>Chuyển slide</h4><p>Để kiểm tra điểm nghẽn này, ta đo xem chunk trượt vì đâu.</p><h4>Nếu bị hỏi</h4><p>Điểm Private sẽ ra sao? Chưa biết. Public chỉ 600 câu; chênh dưới 0,003 giữa các bản là nhiễu, và mức tăng +0,003 của Qwen sát ngưỡng đó, còn mức +0,0085 của việc lọc corpus mới và +0,0056 của việc crawl lại trang tiếng Việt đều vượt ngưỡng.</p></aside>
+</section>
+
+<!-- 12. Chunk trượt vì đâu -->
+<section class="slide" id="s12">
+  <div class="kicker">11 · Chunk trượt vì đâu</div>
+  <h2>CHUNK TRƯỢT VÌ <em>SAI DOC</em></h2>
+  <div class="row" style="margin-top: 50px; gap: 36px">
+    <div class="card grow" style="border-color: var(--amber)"><h3 style="font-size: 150px">77,2%</h3><p>Cửa sổ nộp thuộc doc không có chunk nhãn nào (40.664 trên 52.665).</p></div>
+    <div class="card grow"><h3 style="font-size: 150px">82,4%</h3><p>Cửa sổ trúng khi doc đã đúng (9.894 trên 12.001 cửa sổ ở doc có nhãn).</p></div>
+    <div class="card grow"><h3 style="font-size: 150px">4,0%</h3><p>Chỉ 2.107 cửa sổ ở doc đúng mà trượt đoạn.</p></div>
+  </div>
+  <p style="margin-top: 48px; font-size: 40px; font-weight: 600">Chọn đoạn trong doc đúng đã tốt. Muốn tăng điểm chunk phải chọn doc chính xác hơn.</p>
+  <p style="margin-top: 16px; font-size: 30px; color: var(--soft)">Chunk nhãn tìm được: 10.151 trên 44.819 (22,6%). Cửa sổ trung bình 665 token.</p>
+  <div class="foot"><span>Bài 5781 · 593 câu có nhãn · 52.665 cửa sổ · file chi tiết của bộ chấm</span><span>12 / 15</span></div>
+  <aside class="notes"><div class="t">1:00</div><h4>Nói</h4><ul><li>Câu hỏi: chunk nộp mà trượt, là do chọn sai doc hay do chọn sai đoạn trong doc đúng?</li><li>Đo trên 52.665 cửa sổ: 77,2% thuộc doc không có chunk nhãn nào. Chỉ 4,0% là doc đúng mà trượt đoạn.</li><li>Khi doc đã đúng, cửa sổ ta chọn trúng 82,4%. Tức khâu chọn đoạn đã tốt; còn nâng điểm phải dựa vào chọn doc tốt hơn.</li><li>Đây cũng là lý do thử thêm cửa sổ hay đổi cỡ cửa sổ đều không cho thêm điểm.</li></ul><h4>Số cần nhớ</h4><p>77,2% sai doc · 4,0% đúng doc sai đoạn · 82,4% trúng khi doc đúng · tìm được 10.151 trên 44.819 chunk nhãn (22,6%).</p><h4>Chuyển slide</h4><p>Vậy những hướng cải thiện nào đã được đo và bác bỏ.</p><h4>Nếu bị hỏi</h4><p>Có đo trên Private không? Không; đây là số từ file chi tiết của bộ chấm cho 593 câu có nhãn của Public.</p></aside>
+</section>
+
+<!-- 12. Ngõ cụt -->
+<section class="slide" id="s13">
+  <div class="kicker">12 · Đã đo và bác bỏ</div>
+  <h2>NHỮNG HƯỚNG <em>KHÔNG ĐÁNG LÀM</em></h2>
+  <table style="margin-top: 36px; font-size: 28px">
+    <tr><th style="width: 36%">Hướng</th><th>Kết quả đo</th></tr>
+    <tr><td>BM25 thuần thay RRF</td><td>chỉ bằng 54% điểm của RRF ở K = 100</td></tr>
+    <tr><td>Cửa sổ 980 token</td><td>Chunks F2 0,1927 → 0,1897 (precision +5%, số cửa sổ −8%)</td></tr>
+    <tr><td>Gộp điểm cấp doc</td><td>AUC 0,652 → 0,663: không đáng</td></tr>
+    <tr><td>Cắt số doc theo từng câu</td><td>oracle +0,021, quy tắc thực tế +0,006 (kiểm tra chéo)</td></tr>
+    <tr><td>Tải lại phần tiếng Trung lỗi mã hóa</td><td>không làm: 94,2% số cửa sổ trúng là tài liệu tiếng Việt (bằng chứng gián tiếp)</td></tr>
+  </table>
+  <div class="foot"><span>Kết quả âm cũng là kết quả</span><span>13 / 15</span></div>
+  <aside class="notes"><div class="t">0:45</div><h4>Nói</h4><ul><li>Mỗi hướng đều được đo trước khi cam kết tài nguyên.</li><li>Cắt số doc theo từng câu: bản lý tưởng cho +0,021 nhưng quy tắc thực tế chỉ +0,006, trong sai số.</li><li>Kết quả âm cũng là kết quả: giúp người sau khỏi thử lại.</li></ul><h4>Số cần nhớ</h4><p>BM25 thuần 54% điểm RRF. Cửa sổ 980: 0,1927 → 0,1897. Gộp điểm doc: AUC 0,652 → 0,663. Cắt theo câu: +0,006.</p><h4>Chuyển slide</h4><p>Cũng cần nói rõ những gì chưa biết.</p><h4>Nếu bị hỏi</h4><p>Vì sao không tải lại phần tiếng Trung bị lỗi mã hóa? Bằng chứng domain cho thấy nhãn chủ yếu ở tiếng Việt; chi phí lớn, kỳ vọng thấp.</p></aside>
+</section>
+
+<!-- 13. Hạn chế -->
+<section class="slide" id="s14">
+  <div class="kicker">13 · Hạn chế và điều chưa đo</div>
+  <h2>NÓI RÕ <em>ĐIỀU CHƯA BIẾT</em></h2>
+  <div class="row" style="margin-top: 50px; gap: 36px">
+    <div class="card grow"><h3 style="font-size: 64px">600 câu</h3><p>Điểm Public chỉ từ 600 câu và các ngưỡng chọn trên chính chúng; sai khác ±0,003 là nhiễu. Điểm Private chưa biết.</p></div>
+    <div class="card grow"><h3 style="font-size: 64px">78,7%</h3><p>Corpus mới của Ban Tổ chức đã vào chỉ mục (không tính PubMed); còn thiếu khoảng 130 nghìn trang tiếng Việt bị chặn hoặc cần render. Tỷ lệ doc đáp án nằm trong phần thiếu chưa đo.</p></div>
+    <div class="card grow"><h3 style="font-size: 64px">Tiếng Trung</h3><p>Chưa thử truy vấn bằng tiếng Trung (dịch hoặc mở rộng) và chưa có nhãn tiếng Trung để đo riêng. Truy vấn tiếng Việt vẫn lấy được tài liệu tiếng Trung nhờ dense đa ngôn ngữ: chúng chiếm 13,1% bài nộp nhưng chỉ 5,8% số cửa sổ trúng.</p></div>
+  </div>
+  <p style="margin-top: 40px; font-size: 32px; color: var(--soft)">Bộ chấm đếm token lệch ± ~30 token so với tokenizer BGE-M3, nên mọi cửa sổ chừa biên dưới 1.024 token.</p>
+  <div class="foot"><span>R2AI GURU · Stage 3</span><span>14 / 15</span></div>
+  <aside class="notes"><div class="t">0:45</div><h4>Nói</h4><ul><li>Ba điều chưa biết, nói thẳng để kết luận có giới hạn đúng.</li><li>Điểm Public chỉ từ 600 câu và ngưỡng chọn trên chính chúng; chênh dưới 0,003 là nhiễu. Private chưa biết.</li><li>Chỉ mục phủ 78,7% corpus mới của Ban Tổ chức (772.164 trên 980.598 tài liệu không phải PubMed); thử thêm PubMed không giúp. Tỷ lệ doc đáp án nằm trong phần còn thiếu chưa đo.</li><li>Chưa thử truy vấn tiếng Trung. Chỉ có bằng chứng gián tiếp: tài liệu tiếng Trung chiếm 13,1% bài nộp nhưng chỉ 5,8% số cửa sổ trúng.</li></ul><h4>Số cần nhớ</h4><p>600 câu · 78,7% · 13,1% so với 5,8%.</p><h4>Chuyển slide</h4><p>Từ đó, các bước tiếp theo.</p><h4>Nếu bị hỏi</h4><p>Sao chưa thử tiếng Trung? Chưa có nhãn tiếng Trung để đo riêng; sẽ thử trên khoảng 100 câu nếu còn thời gian trước 31/10.</p></aside>
+</section>
+
+<!-- 14. Kết -->
+<section class="slide light" id="s15">
+  <div class="kicker">14 · Bước tiếp theo</div>
+  <h2>PRECISION LÀ <em>ĐIỂM NGHẼN</em></h2>
+  <div class="row" style="margin-top: 48px; gap: 36px">
+    <div class="card grow"><h3>01</h3><p>Viết lại truy vấn bằng model mở nhỏ cho câu hỏi dài kiểu bệnh nhân kể. Chưa đo.</p></div>
+    <div class="card grow"><h3>02</h3><p>Thử truy vấn tiếng Trung trên khoảng 100 câu. Chưa đo.</p></div>
+    <div class="card grow"><h3>03</h3><p>Độ phủ: chỉ thử các domain tiếng Việt bị chặn (khoảng 180 nghìn trang). Chưa đo lợi ích.</p></div>
+  </div>
+  <div style="margin-top: auto; display: flex; justify-content: space-between; align-items: flex-end">
+    <div><p class="big" style="font-size: 150px; color: var(--graphite)">CẢM ƠN</p><p class="mono" style="font-size: 24px; color: var(--teal-d)">Lê Ngọc Tú · R2AI GURU Stage 3</p></div>
+    <p class="mono" style="font-size: 22px; color: var(--slate); text-align: right">github.com/Le-Ngoc-Tu/<br>r2ai-guru-stage3-medical-retrieval</p>
+  </div>
+  <div class="foot"><span>Mã nguồn, số liệu và nhật ký thực nghiệm trong repo</span><span>15 / 15</span></div>
+  <aside class="notes"><div class="t">0:45</div><h4>Nói</h4><ul><li>Điểm nghẽn là precision chọn doc; các bước tiếp theo đều nhắm vào đó.</li><li>Một: viết lại truy vấn bằng model mở nhỏ, vì câu hỏi bệnh nhân thường dài và kể chuyện. Chưa đo.</li><li>Hai: thử truy vấn tiếng Trung trên khoảng 100 câu, vì hiện chỉ có bằng chứng gián tiếp. Chưa đo.</li><li>Ba: độ phủ, chỉ thử với các domain tiếng Việt bị chặn, không đầu tư phần tiếng Trung.</li><li>Cảm ơn và mời hỏi đáp. Mã nguồn, số liệu và nhật ký thực nghiệm đều có trong repo.</li></ul><h4>Số cần nhớ</h4><p>Ghép Qwen đã làm: +0,003 FINAL, 3,7 giờ GPU. Hạn Private 04/11, paper 11/11.</p><h4>Chuyển slide</h4><p>Kết thúc, mời câu hỏi.</p><h4>Nếu bị hỏi</h4><p>Kỳ vọng tăng bao nhiêu? Mức tăng điểm của từng hướng chưa đo; không nêu con số trước khi có kết quả.</p></aside>
+</section>
+
+</div>
+<div id="notes"></div>
+<div id="hint">← → CHUYỂN · N GHI CHÚ · P CỬA SỔ NGƯỜI NÓI · F TOÀN MÀN HÌNH</div>
+
+<script>
+(function () {
+  var slides = Array.prototype.slice.call(document.querySelectorAll(".slide"));
+  var stage = document.getElementById("stage");
+  var notesEl = document.getElementById("notes");
+  var cur = 0;
+
+  function fit() {
+    var s = Math.min(window.innerWidth / 1920, window.innerHeight / 1080);
+    stage.style.transform = "scale(" + s + ")";
+    stage.style.left = (window.innerWidth - 1920 * s) / 2 + "px";
+    stage.style.top = (window.innerHeight - 1080 * s) / 2 + "px";
+  }
+  function show(i) {
+    cur = Math.max(0, Math.min(slides.length - 1, i));
+    slides.forEach(function (el, k) { el.classList.toggle("active", k === cur); });
+    var a = slides[cur].querySelector("aside.notes");
+    notesEl.innerHTML = a ? a.innerHTML : "";
+    renderPresenter();
+    if (history.replaceState) history.replaceState(null, "", "#" + (cur + 1));
+  }
+
+  /* cửa sổ người nói: ghi chú + slide kế, đồng bộ với cửa sổ chính */
+  var pw = null;
+  function renderPresenter() {
+    if (!pw || pw.closed) return;
+    var a = slides[cur].querySelector("aside.notes");
+    var nx = slides[cur + 1] ? slides[cur + 1].querySelector("h2, h1") : null;
+    pw.document.body.innerHTML = '<div class="pv"><div class="n">Slide ' + (cur + 1) + " / " + slides.length + "</div>" + (a ? a.innerHTML : "") +
+      '<h4>Slide kế</h4><p>' + (nx ? nx.textContent : "Hết") + "</p></div>";
+  }
+  function openPresenter() {
+    if (pw && !pw.closed) { pw.focus(); return; }
+    pw = window.open("", "presenter", "width=980,height=760");
+    if (!pw) return;
+    pw.document.write('<!doctype html><html lang="vi"><meta charset="utf-8"><title>Người nói</title><style>' +
+      'body{margin:0;background:#06161b;color:#f3f1ea;font:24px/1.5 "Be Vietnam Pro","Segoe UI",Arial,sans-serif}' +
+      '.pv{padding:22px 32px}.n{font:700 18px/1 Consolas,monospace;color:#1fb5c4;margin-bottom:6px}' +
+      'h4{font:700 15px/1 Consolas,monospace;letter-spacing:.14em;text-transform:uppercase;color:#f2a93b;margin:20px 0 8px}' +
+      'ul{padding-left:26px}li{margin-bottom:6px}.t{float:right;font:700 18px/1 Consolas,monospace;color:#1fb5c4}' +
+      '</style><body></body></html>');
+    pw.document.close();
+    pw.document.addEventListener("keydown", function (e) {
+      if (e.key === "ArrowRight" || e.key === " ") show(cur + 1);
+      else if (e.key === "ArrowLeft") show(cur - 1);
+    });
+    renderPresenter();
+  }
+  document.addEventListener("keydown", function (e) {
+    var k = e.key;
+    if (k === "ArrowRight" || k === "PageDown" || k === " " || k === "Enter") { show(cur + 1); e.preventDefault(); }
+    else if (k === "ArrowLeft" || k === "PageUp" || k === "Backspace") { show(cur - 1); e.preventDefault(); }
+    else if (k === "Home") show(0);
+    else if (k === "End") show(slides.length - 1);
+    else if (k === "n" || k === "N") notesEl.classList.toggle("on");
+    else if (k === "p" || k === "P") openPresenter();
+    else if (k === "f" || k === "F") { if (!document.fullscreenElement) document.documentElement.requestFullscreen && document.documentElement.requestFullscreen(); else document.exitFullscreen(); }
+  });
+  document.addEventListener("click", function (e) { if (e.clientX > window.innerWidth / 2) show(cur + 1); else show(cur - 1); });
+  window.addEventListener("resize", fit);
+
+  /* biểu đồ điểm (slide 10) */
+  (function chart() {
+    var NS = "http://www.w3.org/2000/svg", svg = document.getElementById("chart");
+    var pts = [
+      ["Baseline", 0.0253], ["K = 100", 0.1467], ["Cửa sổ dài", 0.1700], ["60 cửa sổ", 0.1880],
+      ["Rerank", 0.2006], ["Rerank sâu", 0.2227], ["Ngưỡng", 0.2306], ["Pool 600", 0.2312], ["Ghép Qwen", 0.2342], ["Corpus mới", 0.2427], ["Crawl lại", 0.2483]
+    ];
+    var X0 = 90, W = 1500, Y0 = 40, H = 520, VMAX = 0.27;
+    function el(n, a, t) { var e = document.createElementNS(NS, n); for (var k in a) e.setAttribute(k, a[k]); if (t) e.textContent = t; svg.appendChild(e); return e; }
+    [0, 0.05, 0.1, 0.15, 0.2, 0.25].forEach(function (v) {
+      var y = Y0 + H - v / VMAX * H;
+      el("line", { x1: X0, x2: X0 + W, y1: y, y2: y, stroke: "#F3F1EA", "stroke-opacity": 0.16, "stroke-width": 2 });
+      el("text", { x: X0 - 18, y: y + 8, "text-anchor": "end", fill: "#BFD8D5", "font-size": 24, "font-family": "JetBrains Mono, Be Vietnam Pro, Consolas, monospace", "font-weight": 700 }, v.toFixed(2));
+    });
+    var xs = pts.map(function (p, i) { return X0 + 40 + i * ((W - 80) / (pts.length - 1)); });
+    var ys = pts.map(function (p) { return Y0 + H - p[1] / VMAX * H; });
+    var d = "M" + xs[0] + " " + ys[0];
+    for (var i = 1; i < pts.length; i++) d += " L" + xs[i] + " " + ys[i];
+    el("path", { d: d + " L" + xs[pts.length - 1] + " " + (Y0 + H) + " L" + xs[0] + " " + (Y0 + H) + " Z", fill: "#1FB5C4", "fill-opacity": 0.14 });
+    el("path", { d: d, fill: "none", stroke: "#F2A93B", "stroke-width": 8, "stroke-linejoin": "round", "stroke-linecap": "round" });
+    pts.forEach(function (p, i) {
+      var last = i === pts.length - 1;
+      el("circle", { cx: xs[i], cy: ys[i], r: last ? 15 : 11, fill: last ? "#F2A93B" : "#06161B", stroke: "#F2A93B", "stroke-width": 6 });
+      el("text", { x: i === 0 ? xs[i] + 28 : xs[i], y: i === 0 ? ys[i] + 12 : ys[i] - 26, "text-anchor": i === 0 ? "start" : "middle", fill: last ? "#F2A93B" : "#F3F1EA", "font-size": 28, "font-family": "JetBrains Mono, Be Vietnam Pro, Consolas, monospace", "font-weight": 700 }, p[1].toFixed(4));
+      el("text", { x: xs[i], y: Y0 + H + 44, "text-anchor": "middle", fill: "#BFD8D5", "font-size": 22, "font-family": "Be Vietnam Pro, Segoe UI, Arial, sans-serif", "font-weight": 600 }, p[0]);
+    });
+  })();
+
+  fit();
+  var start = parseInt((location.hash || "#1").slice(1), 10);
+  show(isNaN(start) ? 0 : start - 1);
+})();
+</script>
+</body>
+</html>

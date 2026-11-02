@@ -1,0 +1,643 @@
+<!doctype html>
+<html lang="vi">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=1920, height=1080" />
+    <title>R2AI Stage 3 - Motion Showreel</title>
+    <script src="https://cdn.jsdelivr.net/npm/gsap@3.14.2/dist/gsap.min.js"></script>
+    <style>
+      :root {
+        --ink: #06161b;
+        --panel: #0b232a;
+        --paper: #f3f1ea;
+        --paper-l: #fafaf8;
+        --teal: #1fb5c4;
+        --teal-d: #0e7c86;
+        --amber: #f2a93b;
+        --amber-d: #d98e04;
+        --slate: #52606d;
+        --graphite: #1f2933;
+      }
+      * { margin: 0; padding: 0; box-sizing: border-box; }
+      html, body { width: 1920px; height: 1080px; overflow: hidden; background: var(--ink); }
+      #root { position: relative; width: 100%; height: 100%; overflow: hidden; background: var(--ink); font-family: "League Gothic", "Oswald", sans-serif; color: var(--paper); }
+      .scene { position: absolute; inset: 0; overflow: hidden; }
+      .mono { font-family: "JetBrains Mono", monospace; font-weight: 700; letter-spacing: 0.12em; text-transform: uppercase; }
+      .abs { position: absolute; }
+      .glow { position: absolute; border-radius: 50%; }
+
+      /* ---------- S1 ---------- */
+      #s1 { z-index: 1; }
+      #s2, #s3, #s4, #s5, #s6 { opacity: 0; }
+      #s2 { z-index: 2; background: var(--ink); }
+      #s3 { z-index: 3; background: var(--ink); }
+      #s4 { z-index: 4; background: var(--ink); }
+      #s5 { z-index: 5; background: var(--amber); color: var(--ink); }
+      #s6 { z-index: 6; background: var(--paper-l); color: var(--graphite); }
+      .dotgrid { position: absolute; inset: 0; background-image: radial-gradient(circle at 20px 20px, rgba(31, 181, 196, 0.34) 2.2px, transparent 2.8px); background-size: 40px 40px; }
+      .hit { position: absolute; width: 16px; height: 16px; border-radius: 50%; margin: -8px 0 0 -8px; background: var(--teal); }
+      .hit.warm { background: var(--amber); }
+      #q { position: absolute; left: 120px; top: 318px; }
+      .qline { font-size: 172px; line-height: 0.98; letter-spacing: -0.02em; height: 168px; white-space: nowrap; color: var(--paper); }
+      .ch { display: inline-block; white-space: pre; }
+      .qul { position: absolute; height: 12px; background: var(--amber); transform-origin: 0 50%; }
+      #caret { position: absolute; left: 0; top: 0; width: 22px; height: 128px; background: var(--amber); }
+      #ring { position: absolute; left: 760px; top: 340px; width: 400px; height: 400px; border-radius: 50%; border: 4px solid var(--teal); }
+
+      /* ---------- S2 ---------- */
+      .ghost { position: absolute; font-size: 980px; line-height: 0.8; letter-spacing: -0.02em; color: var(--paper); opacity: 0.045; white-space: nowrap; }
+      .odo { position: absolute; display: flex; align-items: flex-start; }
+      .odo .col { position: relative; overflow: hidden; text-align: center; }
+      .odo .reel { position: absolute; left: 0; top: 0; width: 100%; }
+      .odo .reel div { text-align: center; }
+      .odo .sep { text-align: center; }
+      .hairline { position: absolute; height: 2px; background: var(--paper); opacity: 0.18; transform-origin: 0 50%; }
+      .stat-n { font-size: 150px; line-height: 0.9; letter-spacing: -0.02em; }
+      .barwrap { position: absolute; left: 120px; top: 930px; width: 1680px; height: 46px; background: rgba(243, 241, 234, 0.08); overflow: hidden; }
+      .bar { position: absolute; top: 0; height: 100%; transform-origin: 0 50%; }
+
+      /* ---------- S3 ---------- */
+      .node { position: absolute; background: var(--panel); border: 3px solid rgba(243, 241, 234, 0.55); padding: 22px 26px; }
+      .node h3 { font-size: 78px; font-weight: 400; line-height: 0.95; letter-spacing: -0.01em; }
+      .node p { margin-top: 12px; font-size: 20px; line-height: 1.5; color: var(--teal); }
+      .node .tag { position: absolute; left: -3px; top: -3px; height: 8px; width: 90px; background: var(--teal); }
+      .node.warm .tag { background: var(--amber); }
+      .chip { position: absolute; height: 58px; padding: 0 26px; border: 3px solid rgba(243, 241, 234, 0.55); font-size: 22px; line-height: 52px; background: var(--ink); }
+      .chip.warm { border-color: var(--amber); color: var(--amber); }
+      #wires { position: absolute; inset: 0; }
+      .pulse { position: absolute; left: 0; top: 0; width: 18px; height: 18px; margin: -9px 0 0 -9px; border-radius: 50%; background: var(--amber); opacity: 0; }
+
+      /* ---------- S4 ---------- */
+      #chart { position: absolute; left: 100px; top: 190px; }
+      .tick { font-size: 18px; fill: rgba(243, 241, 234, 0.6); font-family: "JetBrains Mono", monospace; font-weight: 700; }
+      .mlabel { font-size: 21px; fill: var(--paper); font-family: "JetBrains Mono", monospace; font-weight: 700; letter-spacing: 0.08em; }
+      #final { position: absolute; left: 1130px; top: 262px; font-size: 330px; line-height: 0.85; letter-spacing: -0.03em; color: var(--amber); white-space: nowrap; transform-origin: 0 50%; }
+      .pill { position: absolute; height: 62px; padding: 0 24px; font-size: 22px; line-height: 56px; border: 3px solid rgba(243, 241, 234, 0.6); background: var(--ink); white-space: nowrap; }
+
+      /* ---------- S5 ---------- */
+      #big3, #big71 { position: absolute; line-height: 0.78; letter-spacing: -0.03em; white-space: nowrap; }
+      #big3 { left: 150px; top: 250px; font-size: 760px; color: var(--ink); }
+      #strike { position: absolute; left: 110px; top: 560px; width: 520px; height: 34px; background: var(--ink); transform-origin: 0 50%; }
+      .layer71 { position: absolute; left: 0; top: 0; font-size: 940px; line-height: 0.78; letter-spacing: -0.03em; color: var(--ink); white-space: nowrap; }
+      .layer71.depth { color: var(--paper); }
+      #big71 { left: 110px; top: 200px; width: 900px; height: 740px; }
+      .docico { position: absolute; width: 56px; height: 70px; background: var(--ink); border-radius: 6px; }
+      .docico::after { content: ""; position: absolute; right: 0; top: 0; width: 18px; height: 18px; background: var(--amber); border-radius: 0 6px 0 6px; }
+
+      /* ---------- S6 ---------- */
+      #s6 .head { position: absolute; left: 0; font-size: 150px; line-height: 0.95; letter-spacing: -0.02em; color: var(--graphite); white-space: nowrap; }
+      .word { display: inline-block; }
+      .winmask { position: absolute; left: 130px; overflow: hidden; height: 160px; width: 1230px; }
+      #s6 svg { position: absolute; }
+
+      /* ---------- global ---------- */
+      #hud-l, #hud-r { position: absolute; top: 44px; font-size: 20px; z-index: 30; }
+      #hud-l { left: 70px; } #hud-r { right: 70px; }
+      #prog { position: absolute; left: 0; bottom: 0; width: 1920px; height: 6px; z-index: 30; transform-origin: 0 50%; background: var(--teal); }
+      #blinds { position: absolute; inset: 0; z-index: 20; pointer-events: none; }
+      .blind { position: absolute; top: 0; width: 120px; height: 1080px; transform-origin: 50% 100%; }
+      #flash { position: absolute; inset: 0; z-index: 22; background: var(--paper); opacity: 0; }
+      #vig { position: absolute; inset: 0; z-index: 35; background: radial-gradient(circle at 50% 50%, rgba(0, 0, 0, 0) 55%, rgba(0, 0, 0, 0.42) 100%); }
+      #grain { position: absolute; inset: -300px; z-index: 40; opacity: 0.10; mix-blend-mode: overlay; background-image: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='300' height='300'><filter id='n'><feTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='2' stitchTiles='stitch'/><feColorMatrix values='0 0 0 0 1  0 0 0 0 1  0 0 0 0 1  0 0 0 1.2 -0.1'/></filter><rect width='300' height='300' filter='url(%23n)'/></svg>"); background-size: 300px 300px; }
+    </style>
+  </head>
+  <body>
+    <div id="root" data-composition-id="main" data-start="0" data-duration="15" data-width="1920" data-height="1080">
+
+      <!-- ===== S1: query typing + radar ===== -->
+      <section id="s1" class="scene">
+        <div class="glow" style="left: 280px; top: 120px; width: 1100px; height: 900px; background: radial-gradient(circle, rgba(14, 124, 134, 0.38), rgba(14, 124, 134, 0) 66%)"></div>
+        <div class="dotgrid"></div>
+        <div id="hits"></div>
+        <div id="ring"></div>
+        <div id="s1-label" class="abs mono" style="left: 120px; top: 238px; font-size: 24px; color: var(--teal)">query 0412 &nbsp;/&nbsp; vi &nbsp;/&nbsp; 593 labelled</div>
+        <div id="q">
+          <div class="qline" id="ql1"></div>
+          <div class="qline" id="ql2"></div>
+          <div id="uls"></div>
+          <div id="caret"></div>
+        </div>
+        <div id="s1-sub" class="abs mono" style="left: 120px; top: 760px; font-size: 22px; color: rgba(243, 241, 234, 0.7)">retrieve &rarr; rerank &rarr; cut by score</div>
+      </section>
+
+      <!-- ===== S2: scale ===== -->
+      <section id="s2" class="scene">
+        <div class="glow" style="left: 900px; top: -200px; width: 1100px; height: 1100px; background: radial-gradient(circle, rgba(31, 181, 196, 0.2), rgba(31, 181, 196, 0) 65%)"></div>
+        <div id="ghost2" class="ghost" style="left: -40px; top: 170px">4.39M</div>
+        <div class="hairline" id="hl1" style="left: 120px; top: 168px; width: 1680px"></div>
+        <div class="hairline" id="hl2" style="left: 120px; top: 880px; width: 1680px"></div>
+        <div id="s2-l1" class="abs mono" style="left: 120px; top: 120px; font-size: 24px; color: var(--teal)">urls in links_corpus.parquet</div>
+        <div id="odo1" class="odo" style="left: 120px; top: 196px; font-size: 330px; line-height: 0.86"></div>
+        <div id="s2-l2" class="abs mono" style="left: 120px; top: 592px; font-size: 24px; color: var(--amber)">chunks indexed &nbsp;&middot;&nbsp; bm25 + dense</div>
+        <div id="odo2" class="abs" style="left: 120px; top: 628px; font-size: 250px; line-height: 0.86; color: var(--amber); white-space: nowrap"><span id="cnt2">0</span></div>
+        <div id="stats" class="abs" style="left: 1310px; top: 196px; width: 520px">
+          <div class="stat-row" style="height: 190px; overflow: hidden"><div class="stat-n" id="st1"><span id="n1">0</span></div><div class="mono" style="font-size: 20px; color: var(--teal); margin-top: 2px">domains crawled</div></div>
+          <div class="stat-row" style="height: 190px; overflow: hidden; margin-top: 20px"><div class="stat-n" id="st2"><span id="n2">0</span></div><div class="mono" style="font-size: 20px; color: var(--teal); margin-top: 2px">queries to answer</div></div>
+          <div class="stat-row" style="height: 190px; overflow: hidden; margin-top: 20px"><div class="stat-n" id="st3" style="font-family: 'Noto Sans JP', sans-serif; font-weight: 700; font-size: 120px; line-height: 1.05">VI &middot; 中文</div><div class="mono" style="font-size: 20px; color: var(--teal); margin-top: 2px">two languages, one index</div></div>
+        </div>
+        <div class="barwrap">
+          <div id="bar-zh" class="bar" style="left: 0; width: 76.5%; background: var(--teal-d)"></div>
+          <div id="bar-vi" class="bar" style="left: 76.5%; width: 23.5%; background: var(--amber)"></div>
+        </div>
+        <div id="bar-l1" class="abs mono" style="left: 140px; top: 942px; font-size: 22px; color: var(--paper)">中文 chunks 76.5%</div>
+        <div id="bar-l2" class="abs mono" style="left: 1500px; top: 942px; font-size: 22px; color: var(--ink)">vi 23.5%</div>
+      </section>
+
+      <!-- ===== S3: pipeline ===== -->
+      <section id="s3" class="scene">
+        <div id="s3w" class="abs" style="inset: 0">
+          <div class="glow" style="left: 400px; top: 300px; width: 1100px; height: 700px; background: radial-gradient(circle, rgba(14, 124, 134, 0.3), rgba(14, 124, 134, 0) 68%)"></div>
+          <div class="dotgrid" style="opacity: 0.55"></div>
+          <div id="s3-title" data-layout-allow-overlap class="abs" style="left: 90px; top: 78px; font-size: 138px; line-height: 0.95; letter-spacing: -0.02em; white-space: nowrap"><span class="word">RAW URLS</span> <span class="word" style="color: var(--teal)">&rarr;</span> <span class="word" style="color: var(--amber)">RANKED ANSWERS</span></div>
+          <svg id="wires" width="1920" height="1080" viewBox="0 0 1920 1080" fill="none">
+            <path id="w1" d="M350 520 L420 520" pathLength="1" stroke="#F3F1EA" stroke-opacity="0.8" stroke-width="4" stroke-dasharray="1" />
+            <path id="w2" d="M670 520 L760 345" pathLength="1" stroke="#F3F1EA" stroke-opacity="0.8" stroke-width="4" stroke-dasharray="1" />
+            <path id="w3" d="M670 520 L760 735" pathLength="1" stroke="#F3F1EA" stroke-opacity="0.8" stroke-width="4" stroke-dasharray="1" />
+            <path id="w4" d="M1010 345 L1090 520" pathLength="1" stroke="#F3F1EA" stroke-opacity="0.8" stroke-width="4" stroke-dasharray="1" />
+            <path id="w5" d="M1010 735 L1090 520" pathLength="1" stroke="#F3F1EA" stroke-opacity="0.8" stroke-width="4" stroke-dasharray="1" />
+            <path id="w6" d="M1340 520 L1390 520" pathLength="1" stroke="#F3F1EA" stroke-opacity="0.8" stroke-width="4" stroke-dasharray="1" />
+            <path id="w7" d="M1640 520 L1725 520" pathLength="1" stroke="#F2A93B" stroke-width="6" stroke-dasharray="1" />
+          </svg>
+          <div id="p1" class="pulse"></div><div id="p2" class="pulse"></div><div id="p3" class="pulse"></div><div id="p4" class="pulse"></div><div id="p5" class="pulse"></div><div id="p6" class="pulse"></div><div id="p7" class="pulse"></div>
+          <div id="n-crawl" class="node" style="left: 100px; top: 420px; width: 250px; height: 200px"><i class="tag"></i><h3>CRAWL</h3><p class="mono">httpx + trafilatura<br />3.49M pages</p></div>
+          <div id="n-chunk" class="node" style="left: 420px; top: 420px; width: 250px; height: 200px"><i class="tag"></i><h3>CHUNK</h3><p class="mono">420 tokens + overlap<br />7.6M chunks</p></div>
+          <div id="n-bm25" class="node" style="left: 760px; top: 260px; width: 250px; height: 170px"><i class="tag"></i><h3>BM25</h3><p class="mono">tantivy bigram</p></div>
+          <div id="n-dense" class="node" style="left: 760px; top: 650px; width: 250px; height: 170px"><i class="tag"></i><h3>DENSE</h3><p class="mono">bge-m3 1024-bit</p></div>
+          <div id="n-rrf" class="node" style="left: 1090px; top: 420px; width: 250px; height: 200px"><i class="tag"></i><h3>RRF</h3><p class="mono">k = 60<br />top 600</p></div>
+          <div id="n-rerank" class="node warm" style="left: 1390px; top: 420px; width: 250px; height: 200px; border-color: var(--amber)"><i class="tag"></i><h3>RERANK</h3><p class="mono" style="color: var(--amber)">cross-encoder<br />cut by score</p></div>
+          <div id="n-out" class="abs" style="left: 1725px; top: 465px; width: 110px; height: 110px; border-radius: 50%; background: var(--amber); color: var(--ink); display: flex; align-items: center; justify-content: center; font-size: 62px">ZIP</div>
+          <div id="chips" class="abs" style="left: 0; top: 0; width: 1920px; height: 1080px">
+            <div class="chip mono" style="left: 100px; top: 900px">rtx 3050 &middot; 6 gb vram</div>
+            <div class="chip mono" style="left: 560px; top: 900px">16 gb ram</div>
+            <div class="chip mono" style="left: 850px; top: 900px">hdd</div>
+            <div class="chip mono warm" style="left: 1030px; top: 900px">0 cloud gpu</div>
+          </div>
+        </div>
+      </section>
+
+      <!-- ===== S4: score climb ===== -->
+      <section id="s4" class="scene">
+        <div id="s4w" class="abs" style="inset: 0">
+          <div class="glow" style="left: 1100px; top: 100px; width: 900px; height: 900px; background: radial-gradient(circle, rgba(242, 169, 59, 0.2), rgba(242, 169, 59, 0) 66%)"></div>
+          <div id="s4-l1" class="abs mono" style="left: 120px; top: 100px; font-size: 24px; color: var(--teal)">public leaderboard &middot; final = mean(docs f2, chunks f2)</div>
+          <svg id="chart" width="1000" height="760" viewBox="0 0 1000 760" fill="none">
+            <defs>
+              <clipPath id="reveal"><rect id="revealRect" x="0" y="0" width="0" height="760" /></clipPath>
+              <linearGradient id="areaFill" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#1FB5C4" stop-opacity="0.34" /><stop offset="1" stop-color="#1FB5C4" stop-opacity="0" /></linearGradient>
+            </defs>
+            <g id="grid"></g>
+            <g clip-path="url(#reveal)"><path id="area" d="" fill="url(#areaFill)" /><path id="line" d="" stroke="#F2A93B" stroke-width="9" stroke-linejoin="round" stroke-linecap="round" /></g>
+            <g id="marks"></g>
+          </svg>
+          <div id="final" class="abs">0.0253</div>
+          <div id="final-l" class="abs mono" style="left: 1136px; top: 196px; font-size: 26px; color: var(--paper)">final score</div>
+          <div id="x9" class="abs" style="left: 1136px; top: 640px; font-size: 190px; line-height: 0.9; color: var(--teal); letter-spacing: -0.02em">9.8&times;</div>
+          <div id="x9l" class="abs mono" style="left: 1140px; top: 826px; font-size: 22px; color: rgba(243, 241, 234, 0.75)">vs first submission</div>
+          <div id="pill1" class="pill mono" style="left: 1136px; top: 900px">docs f2 0.2906</div>
+          <div id="pill2" class="pill mono" style="left: 1450px; top: 900px">chunks f2 0.2060</div>
+        </div>
+      </section>
+
+      <!-- ===== S5: 3 vs 71 ===== -->
+      <section id="s5" class="scene">
+        <div id="s5-l1" class="abs mono" style="left: 120px; top: 110px; font-size: 26px; color: var(--ink)">assumed &nbsp;vs&nbsp; measured &nbsp;&middot;&nbsp; gold docs per query</div>
+        <div id="big3">3</div>
+        <div id="strike"></div>
+        <div id="big71"></div>
+        <div id="docs" class="abs" style="left: 1090px; top: 190px; width: 760px; height: 720px"></div>
+        <div id="s5-l2" class="abs mono" style="left: 120px; top: 960px; font-size: 24px; color: var(--ink)">recall weighs 4&times; in f2 &nbsp;&rarr;&nbsp; answer wide, then cut by score</div>
+      </section>
+
+      <!-- ===== S6: outro ===== -->
+      <section id="s6" class="scene">
+        <div class="glow" style="left: 1000px; top: 120px; width: 900px; height: 900px; background: radial-gradient(circle, rgba(14, 124, 134, 0.10), rgba(14, 124, 134, 0) 66%)"></div>
+        <div id="s6-l1" class="abs mono" style="left: 130px; top: 218px; font-size: 30px; color: var(--teal-d); letter-spacing: 0.24em">r2ai guru &middot; stage 3</div>
+        <div class="winmask" style="top: 300px"><div class="head" id="h1" style="top: 0"><span class="word">TRUY</span> <span class="word">HỒI</span> <span class="word">TÀI</span> <span class="word">LIỆU</span> <span class="word">Y</span> <span class="word">KHOA</span></div></div>
+        <div class="winmask" style="top: 462px"><div class="head" id="h2" style="top: 0"><span class="word">ĐA</span> <span class="word">NGÔN</span> <span class="word">NGỮ</span> <span class="word" style="color: var(--teal-d)">VIỆT</span> <span class="word">–</span> <span class="word" style="color: var(--teal-d)">TRUNG</span></div></div>
+        <div id="uline" class="abs" style="left: 130px; top: 652px; width: 160px; height: 8px; background: var(--amber-d); transform-origin: 0 50%"></div>
+        <div id="s6-l2" class="abs mono" style="left: 130px; top: 700px; font-size: 24px; color: var(--slate)">bm25 + bge-m3 + rrf + cross-encoder &nbsp;&middot;&nbsp; 4.39m urls &nbsp;&middot;&nbsp; 1 gpu &middot; 6 gb</div>
+        <div id="badge" class="abs mono" style="left: 130px; top: 790px; height: 76px; padding: 0 34px; font-size: 28px; line-height: 70px; border: 4px solid var(--amber-d); color: var(--graphite); background: var(--paper-l)">public final <b style="color: var(--amber-d)">0.2483</b></div>
+        <div id="s6-l3" class="abs mono" style="left: 130px; top: 940px; font-size: 20px; color: var(--slate)">github.com/Le-Ngoc-Tu/r2ai-guru-stage3-medical-retrieval</div>
+        <div id="s6-l4" class="abs mono" style="right: 70px; top: 940px; font-size: 20px; color: var(--slate)">built + animated in html &middot; hyperframes</div>
+
+        <svg id="art" style="left: 1390px; top: 190px" width="520" height="700" viewBox="0 0 520 700" fill="none">
+          <g id="docG" stroke="#0E7C86" stroke-width="9" stroke-linejoin="round" stroke-linecap="round">
+            <path id="docOutline" d="M20 20 H260 L360 120 V470 H20 Z" pathLength="1" stroke-dasharray="1" fill="#FFFFFF" fill-opacity="0" />
+            <path id="docFold" d="M260 20 V120 H360" pathLength="1" stroke-dasharray="1" />
+            <path id="docL1" d="M80 200 H300" pathLength="1" stroke-dasharray="1" stroke-opacity="0.55" />
+            <path id="docL2" d="M80 262 H300" pathLength="1" stroke-dasharray="1" stroke-opacity="0.55" />
+            <path id="docL3" d="M80 324 H300" pathLength="1" stroke-dasharray="1" stroke-opacity="0.55" />
+            <path id="docL4" d="M80 386 H220" pathLength="1" stroke-dasharray="1" stroke-opacity="0.55" />
+          </g>
+          <g id="lens">
+            <circle id="lensC" cx="300" cy="470" r="124" fill="#FFFFFF" fill-opacity="0.9" stroke="#D98E04" stroke-width="18" />
+            <path id="lensH" d="M392 562 L500 672" stroke="#D98E04" stroke-width="28" stroke-linecap="round" />
+            <path d="M236 450 H368 M236 502 H318" stroke="#0E7C86" stroke-width="12" stroke-linecap="round" stroke-opacity="0.85" />
+          </g>
+          <g id="bubVI"><rect x="380" y="40" width="130" height="78" rx="20" fill="#0E7C86" /><path d="M410 118 L402 146 L436 118 Z" fill="#0E7C86" /><text x="445" y="92" text-anchor="middle" font-family="JetBrains Mono" font-weight="700" font-size="38" fill="#FFFFFF">VI</text></g>
+          <g id="bubZH"><rect x="12" y="560" width="130" height="78" rx="20" fill="#FFFFFF" stroke="#0E7C86" stroke-width="6" /><text x="77" y="612" text-anchor="middle" font-family="Noto Sans JP" font-weight="700" font-size="38" fill="#0E7C86">中文</text></g>
+        </svg>
+      </section>
+
+      <!-- ===== global layers ===== -->
+      <div id="blinds"></div>
+      <div id="flash"></div>
+      <div id="hud-l" class="mono" style="color: var(--paper); opacity: 0.8">r2ai / stage-3 &nbsp;&middot;&nbsp; reel 01</div>
+      <div id="hud-r" class="mono" style="color: var(--paper); opacity: 0.8">00:00:00</div>
+      <div id="prog"></div>
+      <div id="vig"></div>
+      <div id="grain"></div>
+    </div>
+
+    <script>
+      (function () {
+        /* ---------- tiện ích xác định ---------- */
+        function mulberry32(a) {
+          return function () {
+            a |= 0; a = (a + 0x6d2b79f5) | 0;
+            let t = Math.imul(a ^ (a >>> 15), 1 | a);
+            t = (t + Math.imul(t ^ (t >>> 7), 61 | t)) ^ t;
+            return ((t ^ (t >>> 14)) >>> 0) / 4294967296;
+          };
+        }
+        const rand = mulberry32(20261016);
+        const NS = "http://www.w3.org/2000/svg";
+        const fmt = (n) => String(Math.round(n)).replace(/\B(?=(\d{3})+(?!\d))/g, ",");
+        const $ = (s) => document.querySelector(s);
+
+        /* mốc thời gian của các cảnh cắt */
+        const T1 = 2.5, T2 = 4.9, T3 = 8.0, T4 = 10.8, T5 = 12.9;
+
+        document.fonts.ready.then(function () {
+          const tl = gsap.timeline({ paused: true });
+
+          /* =========================================================
+             S1: gõ câu hỏi + radar  (discrete typing, ring sweep)
+             ========================================================= */
+          const line1 = "Phương pháp điều trị vẹo vách".normalize("NFC");
+          const line2 = "ngăn mũi không cần phẫu thuật".normalize("NFC");
+          function buildLine(el, text) {
+            const spans = [];
+            Array.from(text).forEach(function (c) {
+              const s = document.createElement("span");
+              s.className = "ch"; s.textContent = c; el.appendChild(s); spans.push(s);
+            });
+            return spans;
+          }
+          const ch1 = buildLine($("#ql1"), line1);
+          const ch2 = buildLine($("#ql2"), line2);
+          const all = ch1.concat(ch2);
+          const q = $("#q");
+          const qRect = q.getBoundingClientRect();
+          const pos = all.map(function (s) {
+            const r = s.getBoundingClientRect();
+            return { x: r.right - qRect.left, y: r.top - qRect.top, l: r.left - qRect.left };
+          });
+          const TYPE_START = 0.25, TYPE_DUR = 1.3, step = TYPE_DUR / all.length;
+          tl.fromTo(all, { opacity: 0 }, { opacity: 1, duration: 0.001, ease: "none", stagger: step }, TYPE_START);
+          /* caret bám theo ký tự cuối cùng */
+          gsap.set("#caret", { x: pos[0].l, y: pos[0].y + 26, opacity: 0 });
+          tl.fromTo("#caret", { opacity: 0 }, { opacity: 1, duration: 0.001 }, TYPE_START - 0.1);
+          pos.forEach(function (p, i) {
+            tl.set("#caret", { x: p.x + 6, y: p.y + 26 }, TYPE_START + i * step + step * 0.5);
+          });
+          /* nhấp nháy sau khi gõ xong rồi tắt */
+          for (let k = 0; k < 4; k++) tl.set("#caret", { opacity: k % 2 === 0 ? 0 : 1 }, 1.62 + k * 0.12);
+          tl.set("#caret", { opacity: 0 }, 2.12);
+
+          /* từ khóa: tô amber + gạch chân vẽ ra */
+          const kw1 = ch1.slice(21, 29), kw2 = ch2.slice(0, 8);
+          const kwAll = kw1.concat(kw2);
+          function underlineFor(idxs, key) {
+            const a = pos[idxs[0]], b = pos[idxs[1]];
+            const u = document.createElement("div");
+            u.className = "qul"; u.id = key;
+            u.style.left = a.l + "px"; u.style.width = (b.x - a.l) + "px"; u.style.top = (a.y + 150) + "px";
+            $("#uls").appendChild(u); return u;
+          }
+          const u1 = underlineFor([21, 28], "ul1");
+          const u2 = underlineFor([29, 36], "ul2");
+          tl.fromTo(kwAll, { color: "#F3F1EA" }, { color: "#F2A93B", duration: 0.18, ease: "power2.out", stagger: 0.012 }, 1.62);
+          tl.fromTo([u1, u2], { scaleX: 0 }, { scaleX: 1, duration: 0.35, ease: "power4.out", stagger: 0.08 }, 1.66);
+          tl.fromTo("#s1-label", { opacity: 0, y: 14 }, { opacity: 1, y: 0, duration: 0.4, ease: "power3.out" }, 0.05);
+          tl.fromTo("#s1-sub", { opacity: 0, y: 18 }, { opacity: 1, y: 0, duration: 0.45, ease: "power3.out" }, 1.55);
+
+          /* lưới chấm: chấm "trúng" bật theo khoảng cách tới tâm khi radar quét */
+          const hitsEl = $("#hits");
+          const hits = [];
+          const cx = 960, cy = 540, RING_MAX = 1110;
+          for (let r = 0; r < 27; r++) {
+            for (let c = 0; c < 48; c++) {
+              const x = 20 + c * 40, y = 20 + r * 40;
+              if (x > 100 && x < 1820 && y > 300 && y < 760) continue; /* chừa vùng chữ */
+              if (rand() > 0.19) continue;
+              const d = document.createElement("div");
+              d.className = "hit" + (rand() < 0.22 ? " warm" : "");
+              d.style.left = x + "px"; d.style.top = y + "px";
+              hitsEl.appendChild(d);
+              hits.push({ el: d, dist: Math.hypot(x - cx, y - cy) });
+            }
+          }
+          const RING_START = 1.75, RING_DUR = 0.78;
+          gsap.set(".hit", { scale: 0, opacity: 0 });
+          hits.forEach(function (h) {
+            const at = RING_START + (h.dist / RING_MAX) * RING_DUR;
+            tl.fromTo(h.el, { scale: 0, opacity: 0 }, { scale: 1.9, opacity: 1, duration: 0.14, ease: "power3.out" }, at);
+            tl.to(h.el, { scale: 1, duration: 0.3, ease: "power2.out" }, at + 0.14);
+          });
+          tl.fromTo("#ring", { scale: 0.08, opacity: 0 }, { scale: 5.6, opacity: 1, duration: RING_DUR, ease: "none" }, RING_START);
+          tl.to("#ring", { opacity: 0, duration: 0.2 }, RING_START + RING_DUR);
+          /* hơi thở nền */
+          tl.fromTo("#s1 .dotgrid", { opacity: 0.55 }, { opacity: 1, duration: 1.1, ease: "sine.inOut", yoyo: true, repeat: 1 }, 0);
+
+          /* =========================================================
+             S1 -> S2: iris reveal  (outgoing + incoming cùng lúc)
+             ========================================================= */
+          tl.to("#s1", { scale: 1.08, filter: "blur(5px)", duration: 0.5, ease: "power3.in" }, T1);
+          tl.set("#s1", { opacity: 0 }, T1 + 0.62);
+          tl.fromTo("#s2", { opacity: 1, clipPath: "circle(0% at 50% 50%)" }, { opacity: 1, clipPath: "circle(78% at 50% 50%)", duration: 0.55, ease: "power4.inOut" }, T1);
+
+          /* =========================================================
+             S2: odometer + count-up + thanh dữ liệu
+             ========================================================= */
+          const DIGIT_H = 330 * 0.86;
+          const odo = $("#odo1");
+          const target = "4,394,718";
+          const cols = [];
+          Array.from(target).forEach(function (chr) {
+            if (chr === ",") {
+              const sep = document.createElement("div");
+              sep.className = "sep"; sep.style.width = "46px"; sep.style.height = DIGIT_H + "px"; sep.textContent = ",";
+              sep.style.color = "#1FB5C4"; odo.appendChild(sep); cols.push({ sep: sep });
+            } else {
+              const col = document.createElement("div");
+              col.className = "col"; col.style.width = "128px"; col.style.height = DIGIT_H + "px";
+              const reel = document.createElement("div"); reel.className = "reel";
+              for (let k = 0; k < 21; k++) { const d = document.createElement("div"); d.style.height = DIGIT_H + "px"; d.textContent = String(k % 10); reel.appendChild(d); }
+              col.appendChild(reel); odo.appendChild(col);
+              cols.push({ reel: reel, digit: Number(chr) });
+            }
+          });
+          const S2_IN = T1 + 0.25;
+          let order = 0;
+          cols.forEach(function (c) {
+            if (c.reel) {
+              const finalY = -(10 + c.digit) * DIGIT_H;
+              tl.fromTo(c.reel, { y: 0 }, { y: finalY, duration: 1.15, ease: "power4.out" }, S2_IN + order * 0.07);
+              order++;
+            } else {
+              tl.fromTo(c.sep, { opacity: 0, y: 40 }, { opacity: 1, y: 0, duration: 0.4, ease: "power3.out" }, S2_IN + order * 0.07);
+            }
+          });
+          tl.fromTo("#s2-l1", { opacity: 0, x: -30 }, { opacity: 1, x: 0, duration: 0.45, ease: "power3.out" }, S2_IN - 0.05);
+          tl.fromTo(["#hl1", "#hl2"], { scaleX: 0 }, { scaleX: 1, duration: 0.8, ease: "expo.out", stagger: 0.1 }, T1 + 0.15);
+          tl.fromTo("#ghost2", { x: 0 }, { x: -160, duration: 2.6, ease: "none" }, T1);
+
+          /* chunks count-up kèm scale tăng theo giá trị */
+          const proxy2 = { v: 0 };
+          tl.fromTo("#s2-l2", { opacity: 0, x: -30 }, { opacity: 1, x: 0, duration: 0.45, ease: "power3.out" }, S2_IN + 0.5);
+          tl.fromTo(proxy2, { v: 0 }, { v: 7607882, duration: 1.5, ease: "power3.out", immediateRender: false, onUpdate: function () { $("#cnt2").textContent = fmt(proxy2.v); } }, S2_IN + 0.55);
+          tl.fromTo("#odo2", { scale: 0.86, transformOrigin: "0% 50%" }, { scale: 1, duration: 1.5, ease: "power3.out" }, S2_IN + 0.55);
+
+          /* cột thống kê bên phải: waterfall + count-up */
+          tl.fromTo(["#st1", "#st2", "#st3"], { yPercent: 120 }, { yPercent: 0, duration: 0.55, ease: "power4.out", stagger: 0.14 }, S2_IN + 0.3);
+          const pn1 = { v: 0 }, pn2 = { v: 0 };
+          tl.fromTo(pn1, { v: 0 }, { v: 97, duration: 1.0, ease: "power3.out", immediateRender: false, onUpdate: function () { $("#n1").textContent = fmt(pn1.v); } }, S2_IN + 0.35);
+          tl.fromTo(pn2, { v: 0 }, { v: 1200, duration: 1.2, ease: "power3.out", immediateRender: false, onUpdate: function () { $("#n2").textContent = fmt(pn2.v); } }, S2_IN + 0.5);
+
+          /* thanh tỉ lệ ngôn ngữ */
+          tl.fromTo("#bar-zh", { scaleX: 0 }, { scaleX: 1, duration: 0.9, ease: "power4.out" }, S2_IN + 1.1);
+          tl.fromTo("#bar-vi", { scaleX: 0 }, { scaleX: 1, duration: 0.5, ease: "power4.out" }, S2_IN + 1.7);
+          tl.fromTo(["#bar-l1", "#bar-l2"], { opacity: 0 }, { opacity: 1, duration: 0.3, stagger: 0.12 }, S2_IN + 1.5);
+
+          /* =========================================================
+             S2 -> S3: blinds (16 dải)
+             ========================================================= */
+          const blindsEl = $("#blinds");
+          const blinds = [];
+          for (let i = 0; i < 16; i++) {
+            const b = document.createElement("div");
+            b.className = "blind"; b.style.left = i * 120 + "px";
+            b.style.background = i % 2 === 0 ? "#0E7C86" : "#1FB5C4";
+            blindsEl.appendChild(b); blinds.push(b);
+          }
+          gsap.set(blinds, { scaleY: 0, transformOrigin: "50% 100%" });
+          tl.fromTo(blinds, { scaleY: 0 }, { scaleY: 1, duration: 0.2, ease: "power3.in", stagger: 0.012 }, T2 - 0.05);
+          tl.set("#s2", { opacity: 0 }, T2 + 0.19);
+          tl.set("#s3", { opacity: 1 }, T2 + 0.19);
+          tl.set(blinds, { transformOrigin: "50% 0%" }, T2 + 0.19);
+          tl.to(blinds, { scaleY: 0, duration: 0.2, ease: "power3.out", stagger: 0.012 }, T2 + 0.2);
+
+          /* =========================================================
+             S3: pipeline  (spring-pop nodes, svg-path-draw, pulses, camera push)
+             ========================================================= */
+          const S3_IN = T2 + 0.3;
+          tl.fromTo("#s3-title .word", { yPercent: 120, opacity: 0 }, { yPercent: 0, opacity: 1, duration: 0.6, ease: "power4.out", stagger: 0.1 }, S3_IN);
+          const nodeOrder = ["#n-crawl", "#n-chunk", "#n-bm25", "#n-dense", "#n-rrf", "#n-rerank", "#n-out"];
+          const wireOrder = ["#w1", "#w2", "#w3", "#w4", "#w5", "#w6", "#w7"];
+          const nodeAt = [0.0, 0.2, 0.42, 0.42, 0.7, 0.95, 1.2];
+          nodeOrder.forEach(function (sel, i) {
+            tl.fromTo(sel, { scale: 0, opacity: 0, transformOrigin: "50% 50%" }, { scale: 1, opacity: 1, duration: 0.5, ease: "back.out(2)" }, S3_IN + 0.15 + nodeAt[i]);
+          });
+          const wireAt = [0.12, 0.3, 0.3, 0.58, 0.58, 0.86, 1.1];
+          wireOrder.forEach(function (sel, i) {
+            tl.fromTo(sel, { strokeDashoffset: 1 }, { strokeDashoffset: 0, duration: 0.3, ease: "power2.out" }, S3_IN + 0.15 + wireAt[i]);
+          });
+          /* xung chạy dọc dây */
+          const segs = [[350, 520, 420, 520], [670, 520, 760, 345], [670, 520, 760, 735], [1010, 345, 1090, 520], [1010, 735, 1090, 520], [1340, 520, 1390, 520], [1640, 520, 1725, 520]];
+          segs.forEach(function (s, i) {
+            const id = "#p" + (i + 1);
+            const t0 = S3_IN + 0.15 + wireAt[i] + 0.26;
+            tl.fromTo(id, { x: s[0], y: s[1], opacity: 0, scale: 0.4 }, { x: s[0], y: s[1], opacity: 1, scale: 1, duration: 0.01 }, t0 - 0.01);
+            tl.fromTo(id, { x: s[0], y: s[1] }, { x: s[2], y: s[3], duration: 0.28, ease: "power1.inOut", repeat: 3, repeatDelay: 0.55, immediateRender: false }, t0);
+            tl.to(id, { opacity: 0, duration: 0.2 }, T3 - 0.4);
+          });
+          tl.fromTo(".chip", { y: 60, opacity: 0 }, { y: 0, opacity: 1, duration: 0.45, ease: "back.out(1.6)", stagger: 0.09 }, S3_IN + 1.45);
+          /* camera push-in chậm */
+          tl.fromTo("#s3w", { scale: 1, x: 0, transformOrigin: "50% 50%" }, { scale: 1.06, x: -36, duration: (T3 - 0.14) - S3_IN, ease: "sine.inOut" }, S3_IN);
+
+          /* =========================================================
+             S3 -> S4: zoom-through + flash
+             ========================================================= */
+          tl.to("#s3w", { scale: 1.5, filter: "blur(12px)", duration: 0.34, ease: "power3.in" }, T3 - 0.14);
+          tl.fromTo("#flash", { opacity: 0 }, { opacity: 1, duration: 0.16, ease: "power2.in" }, T3 + 0.04);
+          tl.set("#s3", { opacity: 0 }, T3 + 0.2);
+          tl.set("#s4", { opacity: 1 }, T3 + 0.2);
+          tl.to("#flash", { opacity: 0, duration: 0.42, ease: "power2.out" }, T3 + 0.21);
+          tl.fromTo("#s4w", { scale: 1.16, transformOrigin: "50% 50%" }, { scale: 1, duration: 0.7, ease: "power3.out" }, T3 + 0.2);
+
+          /* =========================================================
+             S4: biểu đồ điểm (clip reveal + readout đồng bộ)
+             ========================================================= */
+          const pts = [
+            { v: 0.0253, label: "3 docs" },
+            { v: 0.1467, label: "100 docs" },
+            { v: 0.1700, label: "" },
+            { v: 0.1880, label: "" },
+            { v: 0.2006, label: "rerank" },
+            { v: 0.2227, label: "" },
+            { v: 0.2306, label: "score cut" },
+            { v: 0.2312, label: "" },
+            { v: 0.2342, label: "" },
+            { v: 0.2427, label: "" },
+            { v: 0.2483, label: "" }
+          ];
+          const PW = 840, PH = 640, PX = 110, PY = 60, VMAX = 0.25;
+          const xs = pts.map(function (p, i) { return PX + (i / (pts.length - 1)) * PW; });
+          const ys = pts.map(function (p) { return PY + PH - (p.v / VMAX) * PH; });
+          let dpath = "M" + xs[0] + " " + ys[0];
+          for (let i = 1; i < pts.length; i++) dpath += " L" + xs[i] + " " + ys[i];
+          $("#line").setAttribute("d", dpath);
+          $("#area").setAttribute("d", dpath + " L" + xs[pts.length - 1] + " " + (PY + PH) + " L" + xs[0] + " " + (PY + PH) + " Z");
+          const grid = $("#grid");
+          [0, 0.05, 0.1, 0.15, 0.2, 0.25].forEach(function (v) {
+            const y = PY + PH - (v / VMAX) * PH;
+            const l = document.createElementNS(NS, "line");
+            l.setAttribute("x1", PX); l.setAttribute("x2", PX + PW + 20); l.setAttribute("y1", y); l.setAttribute("y2", y);
+            l.setAttribute("stroke", "#F3F1EA"); l.setAttribute("stroke-opacity", "0.14"); l.setAttribute("stroke-width", "2");
+            grid.appendChild(l);
+            const t = document.createElementNS(NS, "text");
+            t.setAttribute("x", PX - 20); t.setAttribute("y", y + 6); t.setAttribute("text-anchor", "end"); t.setAttribute("class", "tick");
+            t.textContent = v.toFixed(2); grid.appendChild(t);
+          });
+          const marks = $("#marks");
+          const markEls = pts.map(function (p, i) {
+            const g = document.createElementNS(NS, "g");
+            const c = document.createElementNS(NS, "circle");
+            c.setAttribute("cx", xs[i]); c.setAttribute("cy", ys[i]); c.setAttribute("r", i === pts.length - 1 ? 17 : 12);
+            c.setAttribute("fill", i === pts.length - 1 ? "#F2A93B" : "#06161B"); c.setAttribute("stroke", "#F2A93B"); c.setAttribute("stroke-width", "6");
+            g.appendChild(c);
+            if (p.label) {
+              const t = document.createElementNS(NS, "text");
+              t.setAttribute("x", xs[i] + (i === 0 ? 18 : 0)); t.setAttribute("y", ys[i] - 30);
+              t.setAttribute("text-anchor", i === 0 ? "start" : "middle"); t.setAttribute("class", "mlabel");
+              t.textContent = p.label; g.appendChild(t);
+            }
+            marks.appendChild(g);
+            return g;
+          });
+          const REV_START = T3 + 0.55, REV_DUR = 2.0;
+          gsap.set("#revealRect", { attr: { width: 0 } });
+          tl.fromTo("#revealRect", { attr: { width: 0 } }, { attr: { width: PX + PW + 40 }, duration: REV_DUR, ease: "none" }, REV_START);
+          markEls.forEach(function (g, i) {
+            const frac = xs[i] / (PX + PW + 40);
+            tl.fromTo(g, { scale: 0, opacity: 0, svgOrigin: xs[i] + " " + ys[i] }, { scale: 1, opacity: 1, duration: 0.4, ease: "back.out(3)" }, REV_START + frac * REV_DUR - 0.05);
+          });
+          tl.fromTo("#grid", { opacity: 0 }, { opacity: 1, duration: 0.5 }, T3 + 0.35);
+          tl.fromTo(["#s4-l1", "#final-l"], { opacity: 0, y: -16 }, { opacity: 1, y: 0, duration: 0.4, ease: "power3.out", stagger: 0.1 }, T3 + 0.4);
+          /* readout: giá trị là hàm của tiến độ reveal, scale tăng theo giá trị */
+          const rp = { u: 0 };
+          const finalEl = $("#final");
+          function valueAt(u) {
+            const px = u * (PX + PW + 40);
+            if (px <= xs[0]) return pts[0].v;
+            for (let i = 1; i < pts.length; i++) {
+              if (px <= xs[i]) { const f = (px - xs[i - 1]) / (xs[i] - xs[i - 1]); return pts[i - 1].v + f * (pts[i].v - pts[i - 1].v); }
+            }
+            return pts[pts.length - 1].v;
+          }
+          tl.fromTo(rp, { u: 0 }, { u: 1, duration: REV_DUR, ease: "none", immediateRender: false, onUpdate: function () {
+            const v = valueAt(rp.u);
+            finalEl.textContent = v.toFixed(4);
+            gsap.set(finalEl, { scale: 0.82 + (v / 0.2483) * 0.18 });
+          } }, REV_START);
+          tl.fromTo("#x9", { opacity: 0, y: 60 }, { opacity: 1, y: 0, duration: 0.55, ease: "power4.out" }, REV_START + 1.55);
+          tl.fromTo("#x9l", { opacity: 0 }, { opacity: 1, duration: 0.4 }, REV_START + 1.8);
+          tl.fromTo(["#pill1", "#pill2"], { opacity: 0, y: 30 }, { opacity: 1, y: 0, duration: 0.45, ease: "back.out(1.8)", stagger: 0.12 }, REV_START + 1.7);
+
+          /* =========================================================
+             S4 -> S5: glitch giật + quét amber từ dưới lên
+             ========================================================= */
+          [18, -26, 14, -9, 0].forEach(function (j, i) { tl.set("#s4w", { x: j, skewX: j * 0.35 }, T4 - 0.16 + i * 0.04); });
+          tl.set("#s4", { opacity: 0 }, T4 + 0.42);
+          tl.fromTo("#s5", { opacity: 1, clipPath: "inset(100% 0% 0% 0%)" }, { opacity: 1, clipPath: "inset(0% 0% 0% 0%)", duration: 0.4, ease: "power4.inOut" }, T4 - 0.04);
+
+          /* =========================================================
+             S5: 3 -> 71
+             ========================================================= */
+          const S5_IN = T4 + 0.1;
+          tl.fromTo("#s5-l1", { opacity: 0, y: -14 }, { opacity: 1, y: 0, duration: 0.35, ease: "power3.out" }, S5_IN + 0.1);
+          tl.fromTo("#big3", { scale: 1.7, opacity: 0, transformOrigin: "0% 50%" }, { scale: 1, opacity: 1, duration: 0.32, ease: "power4.out" }, S5_IN + 0.1);
+          tl.fromTo("#strike", { scaleX: 0 }, { scaleX: 1, duration: 0.22, ease: "power4.out" }, S5_IN + 0.5);
+          tl.to(["#big3", "#strike"], { scale: 0.5, opacity: 0, x: -140, duration: 0.3, ease: "power3.in" }, S5_IN + 0.74);
+
+          /* 71 với các lớp chiều sâu (3d-text-depth-layers) */
+          const big71 = $("#big71");
+          const layers = [];
+          for (let i = 6; i >= 0; i--) {
+            const l = document.createElement("div");
+            l.className = "layer71" + (i > 0 ? " depth" : "");
+            l.textContent = "71";
+            l.style.left = i * 9 + "px"; l.style.top = i * 9 + "px";
+            if (i > 0) l.style.opacity = String(0.5 - i * 0.05);
+            big71.appendChild(l); layers.push(l);
+          }
+          tl.fromTo(big71, { scale: 2.6, opacity: 0, transformOrigin: "0% 50%" }, { scale: 1, opacity: 1, duration: 0.42, ease: "power4.out" }, S5_IN + 0.86);
+
+          /* lưới 71 tài liệu: nở từ tâm ra */
+          const docsEl = $("#docs");
+          const dcols = 9, drows = 8, gx = 84, gy = 90;
+          const docEls = [];
+          for (let k = 0; k < 71; k++) {
+            const c = k % dcols, r = Math.floor(k / dcols);
+            const e = document.createElement("div");
+            e.className = "docico"; e.style.left = c * gx + "px"; e.style.top = r * gy + "px";
+            docsEl.appendChild(e);
+            docEls.push({ el: e, dist: Math.hypot(c - (dcols - 1) / 2, r - (drows - 1) / 2) });
+          }
+          docEls.sort(function (a, b) { return a.dist - b.dist; });
+          tl.fromTo(docEls.map(function (o) { return o.el; }), { scale: 0, opacity: 0 }, { scale: 1, opacity: 1, duration: 0.3, ease: "back.out(2.4)", stagger: 0.008 }, S5_IN + 0.95);
+          tl.fromTo("#s5-l2", { opacity: 0, y: 20 }, { opacity: 1, y: 0, duration: 0.4, ease: "power3.out" }, S5_IN + 1.5);
+
+          /* =========================================================
+             S5 -> S6: iris sang nền sáng của README
+             ========================================================= */
+          tl.to("#s5", { scale: 0.94, duration: 0.5, ease: "power3.in" }, T5);
+          tl.set("#s5", { opacity: 0 }, T5 + 0.62);
+          tl.fromTo("#s6", { opacity: 1, clipPath: "circle(0% at 40% 55%)" }, { opacity: 1, clipPath: "circle(80% at 40% 55%)", duration: 0.6, ease: "power4.inOut" }, T5);
+          tl.to("#vig", { opacity: 0, duration: 0.5 }, T5 + 0.1);
+          tl.to(["#hud-l", "#hud-r"], { color: "#1F2933", duration: 0.2 }, T5 + 0.2);
+          tl.to("#prog", { backgroundColor: "#0E7C86", duration: 0.2 }, T5 + 0.2);
+
+          /* =========================================================
+             S6: lockup  (waterfall-entry + svg-path-draw + spring-pop)
+             ========================================================= */
+          const S6_IN = T5 + 0.3;
+          tl.fromTo("#s6-l1", { opacity: 0, x: -30 }, { opacity: 1, x: 0, duration: 0.45, ease: "power3.out" }, S6_IN);
+          tl.fromTo("#h1 .word", { yPercent: 125 }, { yPercent: 0, duration: 0.5, ease: "power4.out", stagger: 0.055 }, S6_IN + 0.08);
+          tl.fromTo("#h2 .word", { yPercent: 125 }, { yPercent: 0, duration: 0.5, ease: "power4.out", stagger: 0.055 }, S6_IN + 0.3);
+          tl.fromTo("#uline", { scaleX: 0 }, { scaleX: 1, duration: 0.5, ease: "power4.out" }, S6_IN + 0.62);
+          tl.fromTo("#s6-l2", { opacity: 0, y: 14 }, { opacity: 1, y: 0, duration: 0.4, ease: "power3.out" }, S6_IN + 0.7);
+          tl.fromTo("#badge", { opacity: 0, scale: 0.7, transformOrigin: "0% 50%" }, { opacity: 1, scale: 1, duration: 0.5, ease: "back.out(2)" }, S6_IN + 0.85);
+          tl.fromTo(["#s6-l3", "#s6-l4"], { opacity: 0 }, { opacity: 1, duration: 0.4, stagger: 0.1 }, S6_IN + 1.05);
+          /* hình minh họa */
+          tl.fromTo("#docOutline", { strokeDashoffset: 1 }, { strokeDashoffset: 0, duration: 0.7, ease: "power2.inOut" }, S6_IN + 0.1);
+          tl.fromTo("#docOutline", { fillOpacity: 0 }, { fillOpacity: 1, duration: 0.4 }, S6_IN + 0.6);
+          tl.fromTo(["#docFold", "#docL1", "#docL2", "#docL3", "#docL4"], { strokeDashoffset: 1 }, { strokeDashoffset: 0, duration: 0.35, ease: "power2.out", stagger: 0.07 }, S6_IN + 0.5);
+          tl.fromTo("#lens", { scale: 0, rotation: -30, svgOrigin: "300 470", opacity: 0 }, { scale: 1, rotation: 0, opacity: 1, duration: 0.6, ease: "back.out(1.8)" }, S6_IN + 0.75);
+          tl.fromTo("#bubVI", { scale: 0, svgOrigin: "445 80" }, { scale: 1, duration: 0.5, ease: "back.out(2.4)" }, S6_IN + 1.0);
+          tl.fromTo("#bubZH", { scale: 0, svgOrigin: "77 600" }, { scale: 1, duration: 0.5, ease: "back.out(2.4)" }, S6_IN + 1.15);
+          /* kính lúp quét nhẹ + bong bóng nổi để khung cuối không đứng yên */
+          tl.to("#lens", { x: -18, y: -10, duration: 0.9, ease: "sine.inOut", yoyo: true, repeat: 1 }, S6_IN + 1.45);
+          tl.to("#bubVI", { y: -10, duration: 0.8, ease: "sine.inOut", yoyo: true, repeat: 1 }, S6_IN + 1.3);
+
+          /* =========================================================
+             HUD, tiến độ, grain
+             ========================================================= */
+          const hp = { u: 0 };
+          tl.fromTo(hp, { u: 0 }, { u: 1, duration: 15, ease: "none", onUpdate: function () {
+            const f = Math.round(hp.u * 450);
+            const s = Math.floor(f / 30), fr = f % 30;
+            $("#hud-r").textContent = "00:" + String(s).padStart(2, "0") + ":" + String(fr).padStart(2, "0");
+          } }, 0);
+          tl.fromTo("#prog", { scaleX: 0 }, { scaleX: 1, duration: 15, ease: "none" }, 0);
+          tl.fromTo("#grain", { x: 0, y: 0 }, { x: -200, y: 140, duration: 15, ease: "steps(150)" }, 0);
+          /* mở đầu từ tối: s1 hiện dần */
+          tl.fromTo("#s1", { opacity: 0 }, { opacity: 1, duration: 0.25, ease: "power2.out" }, 0);
+
+          window.__timelines["main"] = tl;
+        });
+      })();
+    </script>
+  </body>
+</html>

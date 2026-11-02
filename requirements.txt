@@ -1,0 +1,15 @@
+# R2AI GURU Stage 3 - phụ thuộc đã dùng thật (phiên bản dưới là bản đã kiểm chứng trên Python 3.11)
+# PyTorch cài riêng theo CUDA của máy, ví dụ:
+#   pip install torch --index-url https://download.pytorch.org/whl/cu126
+# (đã chạy với torch 2.14.1+cu126)
+
+httpx>=0.28            # crawler bất đồng bộ
+trafilatura>=2.0       # bóc tách nội dung chính từ HTML
+lxml_html_clean>=0.4   # phụ thuộc bắt buộc của trafilatura
+polars>=1.40           # đọc parquet, xử lý dữ liệu theo shard
+numpy>=2.0
+tantivy>=0.25          # chỉ mục BM25 trên đĩa
+faiss-cpu>=1.12        # chỉ mục nhị phân (IndexBinaryFlat) cho dense retrieval
+transformers>=5.0      # BGE-M3 (embedding), BGE-reranker-v2-m3 (cross-encoder); dùng tham số dtype= của bản 5.x
+tokenizers>=0.22
+huggingface_hub>=1.0   # tải model về data/hf_cache

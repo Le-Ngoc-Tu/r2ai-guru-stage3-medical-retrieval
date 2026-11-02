@@ -1,0 +1,24 @@
+# Môi trường ảo và cache Python
+.venv/
+venv/
+env/
+__pycache__/
+*.py[cod]
+.pytest_cache/
+
+# Dữ liệu lớn và sản phẩm sinh ra (KHÔNG đưa lên repo: dataset của BTC giữ giấy phép CC BY-NC 4.0,
+# nội dung crawl thuộc bản quyền các trang nguồn)
+data/
+*.parquet
+*.sqlite
+*.sqlite3
+*.sqlite3-*
+*.npy
+*.zip
+submission/
+
+# IDE, hệ điều hành
+.vscode/
+.idea/
+.DS_Store
+Thumbs.db
